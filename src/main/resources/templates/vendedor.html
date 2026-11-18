@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Panel del vendedor | Zacatlán</title>
+
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+</head>
+
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-dark shadow-sm">
+    <div class="container">
+
+        <a class="navbar-brand fw-bold" th:href="@{/vendedor}">
+            Zacatlán
+        </a>
+
+        <span class="navbar-text text-white">
+            Panel del vendedor
+        </span>
+
+        <a th:href="@{/logout}" class="btn btn-outline-light">
+            Cerrar sesión
+        </a>
+
+    </div>
+</nav>
+
+<main class="container py-5">
+
+    <div class="mb-4">
+        <h2 class="fw-bold">
+            Bienvenido,
+            <span th:text="${session.usuarioLogueado}"></span>
+        </h2>
+
+        <p class="text-muted">
+            Desde aquí puedes administrar tus actividades como vendedor.
+        </p>
+    </div>
+
+    <!-- Información de la cuenta -->
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0">Información de mi cuenta</h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <span class="text-muted small">Nombre de usuario</span>
+                    <p class="fw-semibold mb-0"
+                       th:text="${session.usuarioLogueado}"></p>
+                </div>
+
+                <div class="col-md-6">
+                    <span class="text-muted small">Tipo de cuenta</span>
+                    <p class="fw-semibold mb-0">Vendedor</p>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Actividades -->
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0">Mis actividades</h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3">
+
+                <!-- Mis productos -->
+                <div class="col-md-4">
+                    <div class="card h-100 border">
+                        <div class="card-body">
+                            <h5 class="card-title">Mis productos</h5>
+
+                            <p class="card-text text-muted">
+                                Consulta los productos que ofreces y sus precios actuales.
+                            </p>
+
+                            <a th:href="@{/vendedor/productos}"
+                               class="btn btn-outline-primary">
+                                Ver mis productos
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Catálogo -->
+                <div class="col-md-4">
+                    <div class="card h-100 border">
+                        <div class="card-body">
+                            <h5 class="card-title">Catálogo de productos</h5>
+
+                            <p class="card-text text-muted">
+                                Explora los productos disponibles y agrega los que deseas vender.
+                            </p>
+
+                            <a th:href="@{/vendedor/catalogo}"
+                               class="btn btn-primary">
+                                Explorar catálogo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cambios de precio -->
+                <div class="col-md-4">
+                    <div class="card h-100 border">
+                        <div class="card-body">
+                            <h5 class="card-title">Cambios de precio</h5>
+
+                            <p class="card-text text-muted">
+                                Solicita autorización para modificar el precio
+                                de tus productos y consulta el estado de tus solicitudes.
+                            </p>
+
+                            <a th:href="@{/vendedor/solicitudes-precio}"
+                               class="btn btn-primary">
+                                Ver solicitudes
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Registrar venta -->
+                <div class="col-md-4">
+                    <div class="card h-100 border">
+                        <div class="card-body">
+                            <h5 class="card-title">Registrar venta</h5>
+
+                            <p class="card-text text-muted">
+                                Registra las ventas realizadas a tus clientes.
+                            </p>
+
+                            <a th:href="@{/vendedor/ventas/nueva}"
+                               class="btn btn-primary">
+                                Registrar venta
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mis ventas -->
+                <div class="col-md-4">
+                    <div class="card h-100 border">
+                        <div class="card-body">
+                            <h5 class="card-title">Mis ventas</h5>
+
+                            <p class="card-text text-muted">
+                                Consulta el historial de tus ventas.
+                            </p>
+
+                            <a th:href="@{/vendedor/ventas}"
+                               class="btn btn-primary">
+                                Ver mis ventas
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</main>
+
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+</body>
+</html>

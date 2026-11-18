@@ -1,0 +1,287 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de vendedor | Zacatlán</title>
+
+  <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+</head>
+
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-dark shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold" th:href="@{/}">Zacatlán</a>
+    <span class="navbar-text text-white">Registro de vendedores</span>
+  </div>
+</nav>
+
+<main class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+
+      <div class="card border-0 shadow">
+
+        <div class="card-header bg-primary text-white text-center py-4">
+          <h2 class="mb-1">Solicitud de registro</h2>
+          <p class="mb-0">Forma parte de nuestros vendedores</p>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+
+          <p class="text-muted text-center mb-4">
+            Completa tus datos y selecciona el bloque
+            al que deseas pertenecer.
+          </p>
+
+          <!-- Mensaje de éxito -->
+          <div th:if="${mensaje}"
+               class="alert alert-success"
+               role="alert"
+               th:text="${mensaje}">
+          </div>
+
+          <!-- Mensaje de error -->
+          <div th:if="${error}"
+               class="alert alert-danger"
+               role="alert"
+               th:text="${error}">
+          </div>
+
+          <form th:action="@{/registro-vendedor}"
+                method="post"
+                id="formRegistro">
+
+            <input type="hidden"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+
+            <h5 class="fw-bold mb-3">Datos personales</h5>
+
+            <!-- Nombre -->
+            <div class="mb-3">
+              <label for="nombre" class="form-label fw-semibold">
+                Nombre
+              </label>
+
+              <input type="text"
+                     class="form-control"
+                     id="nombre"
+                     name="nombre"
+                     maxlength="100"
+                     placeholder="Ingresa tu nombre"
+                     th:value="${nombre}"
+                     required>
+            </div>
+
+            <!-- Apellido -->
+            <div class="mb-3">
+              <label for="apellido" class="form-label fw-semibold">
+                Apellido
+              </label>
+
+              <input type="text"
+                     class="form-control"
+                     id="apellido"
+                     name="apellido"
+                     maxlength="100"
+                     placeholder="Ingresa tus apellidos"
+                     th:value="${apellido}"
+                     required>
+            </div>
+
+            <!-- Teléfono -->
+            <div class="mb-3">
+              <label for="telefono" class="form-label fw-semibold">
+                Teléfono
+              </label>
+
+              <input type="tel"
+                     class="form-control"
+                     id="telefono"
+                     name="telefono"
+                     maxlength="10"
+                     pattern="[0-9]{10}"
+                     placeholder="Ej. 7711234567"
+                     th:value="${telefono}"
+                     required>
+
+              <div class="form-text">
+                Ingresa un número de 10 dígitos.
+              </div>
+            </div>
+
+            <!-- Bloque -->
+            <div class="mb-4">
+              <label for="idBloque" class="form-label fw-semibold">
+                Bloque al que deseas pertenecer
+              </label>
+
+              <select class="form-select"
+                      id="idBloque"
+                      name="idBloque"
+                      required>
+
+                <option value=""
+                        disabled
+                        th:selected="${idBloque == null}">
+                  Selecciona un bloque
+                </option>
+
+                <option th:each="bloque : ${bloques}"
+                        th:value="${bloque.id}"
+                        th:text="${bloque.nombre}"
+                        th:selected="${bloque.id == idBloque}">
+                </option>
+              </select>
+            </div>
+
+            <hr class="my-4">
+
+            <h5 class="fw-bold mb-3">Datos de acceso</h5>
+
+            <!-- Nombre de usuario -->
+            <div class="mb-3">
+              <label for="username" class="form-label fw-semibold">
+                Nombre de usuario
+              </label>
+
+              <input type="text"
+                     class="form-control"
+                     id="username"
+                     name="username"
+                     maxlength="50"
+                     autocomplete="username"
+                     placeholder="Elige un nombre de usuario"
+                     th:value="${username}"
+                     required>
+
+              <div class="form-text">
+                Utilizarás este nombre para iniciar sesión.
+              </div>
+            </div>
+
+            <!-- Contraseña -->
+            <div class="mb-3">
+              <label for="password" class="form-label fw-semibold">
+                Contraseña
+              </label>
+
+              <input type="password"
+                     class="form-control"
+                     id="password"
+                     name="password"
+                     minlength="8"
+                     maxlength="72"
+                     autocomplete="new-password"
+                     placeholder="Crea una contraseña"
+                     required>
+
+              <div class="form-text">
+                Debe contener entre 8 y 72 caracteres
+                y no tener espacios.
+              </div>
+            </div>
+
+            <!-- Confirmar contraseña -->
+            <div class="mb-4">
+              <label for="confirmarPassword"
+                     class="form-label fw-semibold">
+                Confirmar contraseña
+              </label>
+
+              <input type="password"
+                     class="form-control"
+                     id="confirmarPassword"
+                     name="confirmarPassword"
+                     minlength="8"
+                     maxlength="72"
+                     autocomplete="new-password"
+                     placeholder="Escribe nuevamente tu contraseña"
+                     required>
+
+              <div id="mensajePassword"
+                   class="form-text">
+              </div>
+            </div>
+
+            <!-- Botón -->
+            <div class="d-grid">
+              <button type="submit"
+                      class="btn btn-primary btn-lg">
+                Enviar solicitud
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+
+        <div class="card-footer text-center text-muted py-3">
+          <small>
+            Tu solicitud será revisada por un administrador.
+            Podrás iniciar sesión cuando sea aprobada.
+          </small>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+<script>
+  const formulario = document.getElementById("formRegistro");
+  const password = document.getElementById("password");
+  const confirmarPassword = document.getElementById("confirmarPassword");
+  const mensajePassword = document.getElementById("mensajePassword");
+
+  function validarPassword() {
+
+    if (confirmarPassword.value === "") {
+      confirmarPassword.setCustomValidity("");
+      mensajePassword.textContent = "";
+      return;
+    }
+
+    if (password.value !== confirmarPassword.value) {
+
+      confirmarPassword.setCustomValidity(
+              "Las contraseñas no coinciden."
+      );
+
+      mensajePassword.textContent =
+              "Las contraseñas no coinciden.";
+
+      mensajePassword.className = "form-text text-danger";
+
+    } else {
+
+      confirmarPassword.setCustomValidity("");
+
+      mensajePassword.textContent =
+              "Las contraseñas coinciden.";
+
+      mensajePassword.className = "form-text text-success";
+    }
+  }
+
+  password.addEventListener("input", validarPassword);
+  confirmarPassword.addEventListener("input", validarPassword);
+
+  formulario.addEventListener("submit", function(event) {
+
+    validarPassword();
+
+    if (!formulario.checkValidity()) {
+      event.preventDefault();
+      formulario.reportValidity();
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de administración | Zacatlán</title>
+
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+</head>
+
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-dark shadow-sm">
+    <div class="container">
+
+        <a class="navbar-brand fw-bold" th:href="@{/admin}">
+            Zacatlán
+        </a>
+
+        <span class="navbar-text text-white">
+            Panel de administración
+        </span>
+
+        <a th:href="@{/logout}" class="btn btn-outline-light">
+            Cerrar sesión
+        </a>
+
+    </div>
+</nav>
+
+<main class="container py-5">
+
+    <div class="mb-4">
+        <h2 class="fw-bold">Bienvenido, administrador</h2>
+        <p class="text-muted mb-0">
+            Desde aquí puedes gestionar los usuarios, productos y solicitudes de vendedores.
+        </p>
+    </div>
+
+    <!-- Accesos de administración -->
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <h5 class="fw-bold mb-3">Administración del sistema</h5>
+
+            <div class="d-flex flex-wrap gap-2">
+
+                <a th:href="@{/admin/usuarios}"
+                   class="btn btn-primary">
+                    Gestión de usuarios
+                </a>
+
+                <a th:href="@{/admin/productos}"
+                   class="btn btn-success">
+                    Gestión de productos
+                </a>
+
+                <a th:href="@{/admin/bloques}"
+                   class="btn btn-outline-primary">
+                    Gestión de bloques
+                </a>
+
+                <a th:href="@{/admin/solicitudes-precio}"
+                   class="btn btn-warning">
+                    Solicitudes de cambio de precio
+                </a>
+
+                <a th:href="@{/admin/ventas}"
+                   class="btn btn-info">
+                    Consultar ventas
+                </a>
+
+                <a th:href="@{/admin/reportes/ventas}"
+                   class="btn btn-dark">
+                    Reportes diarios
+                </a>
+
+                <a th:href="@{/admin/historial}"
+                   class="btn btn-secondary">
+                    Bitácora administrativa
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Mensajes de resultado -->
+    <div th:if="${mensaje}"
+         class="alert alert-success alert-dismissible fade show"
+         role="alert">
+
+        <span th:text="${mensaje}"></span>
+
+        <button type="button" class="btn-close"
+                data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+
+    <div th:if="${error}"
+         class="alert alert-danger alert-dismissible fade show"
+         role="alert">
+
+        <span th:text="${error}"></span>
+
+        <button type="button" class="btn-close"
+                data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+
+    <!-- Solicitudes pendientes de vendedores -->
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold">Solicitudes pendientes</h5>
+        </div>
+
+        <div class="card-body">
+
+            <div th:if="${#lists.isEmpty(solicitudes)}"
+                 class="alert alert-info mb-0">
+                Actualmente no hay solicitudes pendientes.
+            </div>
+
+            <div th:unless="${#lists.isEmpty(solicitudes)}"
+                 class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Teléfono</th>
+                        <th>Bloque</th>
+                        <th>Fecha de solicitud</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+
+                    <tr th:each="solicitud : ${solicitudes}">
+
+                        <td>
+                            <span th:text="${solicitud.nombre}"></span>
+                            <span th:text="${solicitud.apellido}"></span>
+                        </td>
+
+                        <td th:text="${solicitud.telefono}"></td>
+
+                        <td th:text="${solicitud.bloque.nombre}"></td>
+
+                        <td th:text="${#temporals.format(solicitud.fechaSolicitud, 'dd/MM/yyyy HH:mm')}"></td>
+
+                        <td>
+                            <span class="badge text-bg-warning">
+                                Pendiente
+                            </span>
+                        </td>
+
+                        <td>
+                            <div class="d-flex gap-2">
+
+                                <form th:action="@{/admin/aprobar/{id}(id=${solicitud.id})}"
+                                      method="post">
+
+                                    <button type="submit"
+                                            class="btn btn-success btn-sm">
+                                        Aprobar
+                                    </button>
+
+                                </form>
+
+                                <form th:action="@{/admin/rechazar/{id}(id=${solicitud.id})}"
+                                      method="post"
+                                      onsubmit="return confirm('¿Estás seguro de que deseas rechazar esta solicitud?');">
+
+                                    <button type="submit"
+                                            class="btn btn-danger btn-sm">
+                                        Rechazar
+                                    </button>
+
+                                </form>
+
+                            </div>
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
+</main>
+
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+</body>
+</html>

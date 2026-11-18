@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Catálogo de productos | Zacatlán</title>
+
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+</head>
+
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-dark shadow-sm">
+    <div class="container">
+
+        <a class="navbar-brand fw-bold" th:href="@{/vendedor}">
+            Zacatlán
+        </a>
+
+        <span class="navbar-text text-white">
+            Catálogo de productos
+        </span>
+
+        <a th:href="@{/logout}" class="btn btn-outline-light">
+            Cerrar sesión
+        </a>
+
+    </div>
+</nav>
+
+<main class="container py-5">
+
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+
+        <div>
+            <h2 class="fw-bold">Catálogo de productos</h2>
+
+            <p class="text-muted mb-0">
+                Productos disponibles para tu bloque.
+            </p>
+        </div>
+
+        <a th:href="@{/vendedor}"
+           class="btn btn-outline-secondary">
+            Volver al panel
+        </a>
+
+    </div>
+
+    <!-- Mensaje de éxito -->
+    <div th:if="${mensaje}"
+         class="alert alert-success alert-dismissible fade show"
+         role="alert">
+
+        <span th:text="${mensaje}"></span>
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Cerrar">
+        </button>
+
+    </div>
+
+    <!-- Mensaje de error -->
+    <div th:if="${error}"
+         class="alert alert-danger alert-dismissible fade show"
+         role="alert">
+
+        <span th:text="${error}"></span>
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Cerrar">
+        </button>
+
+    </div>
+
+    <!-- Bloque asignado -->
+    <div th:if="${bloque != null}"
+         class="alert alert-primary">
+
+        <strong>Tu bloque:</strong>
+
+        <span th:text="${bloque.nombreBloque}"></span>
+
+    </div>
+
+    <!-- Catálogo vacío -->
+    <div th:if="${#lists.isEmpty(productos) and error == null}"
+         class="alert alert-info">
+
+        No hay productos disponibles en tu bloque actualmente.
+
+    </div>
+
+    <!-- Tabla de productos -->
+    <div th:unless="${#lists.isEmpty(productos)}"
+         class="card border-0 shadow-sm">
+
+        <div class="card-header bg-white py-3">
+
+            <h5 class="fw-bold mb-0">
+                Productos disponibles
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-dark">
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Producto</th>
+                        <th>Descripción</th>
+                        <th>Estado</th>
+                        <th>Agregar al inventario</th>
+                    </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    <tr th:each="producto : ${productos}">
+
+                        <!-- ID -->
+                        <td th:text="${producto.id}"></td>
+
+                        <!-- Nombre -->
+                        <td class="fw-semibold"
+                            th:text="${producto.nombre}">
+                        </td>
+
+                        <!-- Descripción -->
+                        <td th:text="${producto.descripcion}"></td>
+
+                        <!-- Estado -->
+                        <td>
+
+                            <span class="badge text-bg-success">
+                                Disponible
+                            </span>
+
+                        </td>
+
+                        <!-- Asignar precio inicial y agregar -->
+                        <td>
+
+                            <form th:action="@{/vendedor/catalogo/agregar}"
+                                  method="post"
+                                  class="d-flex gap-2 align-items-center">
+
+                                <input type="hidden"
+                                       name="idProducto"
+                                       th:value="${producto.id}">
+
+                                <input type="number"
+                                       name="precio"
+                                       class="form-control form-control-sm"
+                                       min="0.01"
+                                       step="0.01"
+                                       placeholder="Precio"
+                                       aria-label="Precio inicial"
+                                       style="width: 110px;"
+                                       required>
+
+                                <button type="submit"
+                                        class="btn btn-success btn-sm">
+
+                                    <span>Agregar</span>
+
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+</body>
+</html>

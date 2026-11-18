@@ -1,0 +1,270 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Solicitudes de precio | Zacatlán</title>
+
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+</head>
+
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-dark shadow-sm">
+    <div class="container">
+
+        <a class="navbar-brand fw-bold" th:href="@{/admin}">
+            Zacatlán
+        </a>
+
+        <span class="navbar-text text-white">
+            Solicitudes de cambio de precio
+        </span>
+
+        <a th:href="@{/logout}" class="btn btn-outline-light">
+            Cerrar sesión
+        </a>
+
+    </div>
+</nav>
+
+<main class="container py-5">
+
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+
+        <div>
+            <h2 class="fw-bold">Solicitudes de cambio de precio</h2>
+
+            <p class="text-muted mb-0">
+                Revisa las solicitudes enviadas por los vendedores y decide si autorizas o rechazas los cambios.
+            </p>
+        </div>
+
+        <a th:href="@{/admin}"
+           class="btn btn-outline-secondary">
+            Volver al panel
+        </a>
+
+    </div>
+
+    <!-- Mensaje de éxito -->
+    <div th:if="${mensaje}"
+         class="alert alert-success alert-dismissible fade show"
+         role="alert">
+
+        <span th:text="${mensaje}"></span>
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Cerrar">
+        </button>
+
+    </div>
+
+    <!-- Mensaje de error -->
+    <div th:if="${error}"
+         class="alert alert-danger alert-dismissible fade show"
+         role="alert">
+
+        <span th:text="${error}"></span>
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Cerrar">
+        </button>
+
+    </div>
+
+    <!-- Resumen -->
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <div class="d-flex align-items-center justify-content-between">
+
+                <div>
+                    <h5 class="fw-bold mb-1">
+                        Solicitudes pendientes
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        Cambios de precio que necesitan autorización administrativa.
+                    </p>
+                </div>
+
+                <span class="badge text-bg-warning fs-6"
+                      th:text="${#lists.size(solicitudes)} + ' pendientes'">
+                </span>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Sin solicitudes -->
+    <div th:if="${#lists.isEmpty(solicitudes) and error == null}"
+         class="alert alert-info">
+
+        Actualmente no hay solicitudes de cambio de precio pendientes.
+
+    </div>
+
+    <!-- Tabla de solicitudes -->
+    <div th:unless="${#lists.isEmpty(solicitudes)}"
+         class="card border-0 shadow-sm">
+
+        <div class="card-header bg-white py-3">
+
+            <h5 class="fw-bold mb-0">
+                Solicitudes recibidas
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-dark">
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Vendedor</th>
+                        <th>Producto</th>
+                        <th>Precio actual</th>
+                        <th>Precio solicitado</th>
+                        <th>Fecha de solicitud</th>
+                        <th>Estado</th>
+                        <th style="min-width: 320px;">Acciones</th>
+                    </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    <tr th:each="solicitud : ${solicitudes}">
+
+                        <!-- ID -->
+                        <td th:text="${solicitud.idSolicitud}"></td>
+
+                        <!-- Vendedor -->
+                        <td class="fw-semibold"
+                            th:text="${solicitud.nombreVendedor}">
+                        </td>
+
+                        <!-- Producto -->
+                        <td th:text="${solicitud.nombreProducto}"></td>
+
+                        <!-- Precio actual -->
+                        <td>
+                            $<span th:text="${#numbers.formatDecimal(solicitud.precioActual, 1, 2)}"></span>
+                        </td>
+
+                        <!-- Precio solicitado -->
+                        <td class="fw-bold text-primary">
+                            $<span th:text="${#numbers.formatDecimal(solicitud.precioSolicitado, 1, 2)}"></span>
+                        </td>
+
+                        <!-- Fecha -->
+                        <td>
+                            <span th:if="${solicitud.fechaSolicitud != null}"
+                                  th:text="${#temporals.format(solicitud.fechaSolicitud, 'dd/MM/yyyy HH:mm')}">
+                            </span>
+
+                            <span th:unless="${solicitud.fechaSolicitud != null}"
+                                  class="text-muted">
+                                No disponible
+                            </span>
+                        </td>
+
+                        <!-- Estado -->
+                        <td>
+                            <span class="badge text-bg-warning">
+                                Pendiente
+                            </span>
+                        </td>
+
+                        <!-- Acciones -->
+                        <td>
+
+                            <div class="d-flex flex-column gap-2">
+
+                                <!-- Autorizar -->
+                                <form th:action="@{/admin/solicitudes-precio/{id}/autorizar(id=${solicitud.idSolicitud})}"
+                                      method="post"
+                                      onsubmit="return confirm('¿Deseas autorizar este cambio de precio?');">
+
+                                    <label class="form-label small fw-semibold">
+                                        Observación de autorización
+                                    </label>
+
+                                    <textarea name="observacion"
+                                              class="form-control form-control-sm mb-2"
+                                              rows="2"
+                                              placeholder="Observación opcional">
+                                    </textarea>
+
+                                    <button type="submit"
+                                            class="btn btn-success btn-sm w-100">
+
+                                        Autorizar solicitud
+
+                                    </button>
+
+                                </form>
+
+                                <hr class="my-2">
+
+                                <!-- Rechazar -->
+                                <form th:action="@{/admin/solicitudes-precio/{id}/rechazar(id=${solicitud.idSolicitud})}"
+                                      method="post"
+                                      onsubmit="return confirm('¿Estás seguro de que deseas rechazar esta solicitud?');">
+
+                                    <label class="form-label small fw-semibold">
+                                        Motivo u observación del rechazo
+                                    </label>
+
+                                    <textarea name="observacion"
+                                              class="form-control form-control-sm mb-2"
+                                              rows="2"
+                                              placeholder="Escribe el motivo del rechazo">
+                                    </textarea>
+
+                                    <button type="submit"
+                                            class="btn btn-danger btn-sm w-100">
+
+                                        Rechazar solicitud
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
+</main>
+
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+</body>
+</html>

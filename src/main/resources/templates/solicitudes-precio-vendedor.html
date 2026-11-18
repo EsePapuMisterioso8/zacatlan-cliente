@@ -1,0 +1,333 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Solicitudes de cambio de precio | Zacatlán</title>
+
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+</head>
+
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-dark shadow-sm">
+    <div class="container">
+
+        <a class="navbar-brand fw-bold" th:href="@{/vendedor}">
+            Zacatlán
+        </a>
+
+        <span class="navbar-text text-white">
+            Solicitudes de cambio de precio
+        </span>
+
+        <a th:href="@{/logout}" class="btn btn-outline-light">
+            Cerrar sesión
+        </a>
+
+    </div>
+</nav>
+
+<main class="container py-5">
+
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+
+        <div>
+            <h2 class="fw-bold">Solicitudes de cambio de precio</h2>
+
+            <p class="text-muted mb-0">
+                Solicita cambios de precio y consulta el estado de tus solicitudes.
+            </p>
+        </div>
+
+        <a th:href="@{/vendedor}" class="btn btn-outline-secondary">
+            Volver al panel
+        </a>
+
+    </div>
+
+    <!-- Mensaje de éxito -->
+    <div th:if="${mensaje}"
+         class="alert alert-success alert-dismissible fade show"
+         role="alert">
+
+        <span th:text="${mensaje}"></span>
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Cerrar">
+        </button>
+
+    </div>
+
+    <!-- Mensaje de error -->
+    <div th:if="${error}"
+         class="alert alert-danger alert-dismissible fade show"
+         role="alert">
+
+        <span th:text="${error}"></span>
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Cerrar">
+        </button>
+
+    </div>
+
+    <!-- Formulario para solicitar cambio de precio -->
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0">
+                Nueva solicitud de cambio de precio
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <p class="text-muted">
+                Selecciona uno de tus productos activos e indica el nuevo precio.
+                El administrador deberá autorizar la solicitud para que el cambio
+                se aplique.
+            </p>
+
+            <div th:if="${#lists.isEmpty(inventario)}"
+                 class="alert alert-info mb-0">
+
+                No tienes productos registrados en tu inventario.
+
+                Agrega productos antes de solicitar cambios de precio.
+
+            </div>
+
+            <form th:unless="${#lists.isEmpty(inventario)}"
+                  th:action="@{/vendedor/solicitudes-precio/crear}"
+                  method="post">
+
+                <div class="row g-3 align-items-end">
+
+                    <!-- Producto -->
+                    <div class="col-md-6">
+
+                        <label for="idProductoVendedor"
+                               class="form-label fw-semibold">
+
+                            Producto
+
+                        </label>
+
+                        <select class="form-select"
+                                id="idProductoVendedor"
+                                name="idProductoVendedor"
+                                required>
+
+                            <option value="">
+                                Selecciona un producto
+                            </option>
+
+                            <th:block th:each="producto : ${inventario}">
+
+                                <option th:if="${producto.activo == true}"
+                                        th:value="${producto.idProductoVendedor}"
+                                        th:text="${producto.nombreProducto + ' - Precio actual: $' + #numbers.formatDecimal(producto.precio, 1, 2)}">
+                                </option>
+
+                            </th:block>
+
+                        </select>
+
+                        <div class="form-text">
+                            Solo puedes solicitar cambios para productos activos.
+                        </div>
+
+                    </div>
+
+                    <!-- Nuevo precio -->
+                    <div class="col-md-4">
+
+                        <label for="precioSolicitado"
+                               class="form-label fw-semibold">
+
+                            Nuevo precio
+
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">$</span>
+
+                            <input type="number"
+                                   class="form-control"
+                                   id="precioSolicitado"
+                                   name="precioSolicitado"
+                                   min="0.01"
+                                   step="0.01"
+                                   placeholder="Ej. 85.00"
+                                   required>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Botón -->
+                    <div class="col-md-2">
+
+                        <button type="submit"
+                                class="btn btn-primary w-100">
+
+                            Solicitar
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Historial de solicitudes -->
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-header bg-white py-3">
+
+            <h5 class="fw-bold mb-0">
+                Historial de mis solicitudes
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <!-- Sin solicitudes -->
+            <div th:if="${#lists.isEmpty(solicitudes)}"
+                 class="alert alert-info mb-0">
+
+                Todavía no tienes solicitudes de cambio de precio registradas.
+
+            </div>
+
+            <!-- Tabla del historial -->
+            <div th:unless="${#lists.isEmpty(solicitudes)}"
+                 class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-dark">
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Producto</th>
+                        <th>Precio actual</th>
+                        <th>Precio solicitado</th>
+                        <th>Fecha de solicitud</th>
+                        <th>Fecha de respuesta</th>
+                        <th>Estado</th>
+                        <th>Observación del administrador</th>
+                    </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    <tr th:each="solicitud : ${solicitudes}">
+
+                        <!-- ID -->
+                        <td th:text="${solicitud.idSolicitud}"></td>
+
+                        <!-- Producto -->
+                        <td class="fw-semibold"
+                            th:text="${solicitud.nombreProducto}">
+                        </td>
+
+                        <!-- Precio actual -->
+                        <td>
+                            $<span th:text="${#numbers.formatDecimal(solicitud.precioActual, 1, 2)}"></span>
+                        </td>
+
+                        <!-- Precio solicitado -->
+                        <td>
+                            $<span th:text="${#numbers.formatDecimal(solicitud.precioSolicitado, 1, 2)}"></span>
+                        </td>
+
+                        <!-- Fecha de solicitud -->
+                        <td th:text="${solicitud.fechaSolicitud != null
+                            ? #temporals.format(solicitud.fechaSolicitud, 'dd/MM/yyyy HH:mm')
+                            : 'No disponible'}">
+                        </td>
+
+                        <!-- Fecha de respuesta -->
+                        <td>
+
+                            <span th:if="${solicitud.fechaRespuesta != null}"
+                                  th:text="${#temporals.format(solicitud.fechaRespuesta, 'dd/MM/yyyy HH:mm')}">
+                            </span>
+
+                            <span th:unless="${solicitud.fechaRespuesta != null}"
+                                  class="text-muted">
+                                Pendiente
+                            </span>
+
+                        </td>
+
+                        <!-- Estado -->
+                        <td>
+
+                            <span th:if="${solicitud.estado == 'PENDIENTE'}"
+                                  class="badge text-bg-warning">
+                                Pendiente
+                            </span>
+
+                            <span th:if="${solicitud.estado == 'APLICADA'}"
+                                  class="badge text-bg-success">
+                                Autorizada
+                            </span>
+
+                            <span th:if="${solicitud.estado == 'RECHAZADA'}"
+                                  class="badge text-bg-danger">
+                                Rechazada
+                            </span>
+
+                        </td>
+
+                        <!-- Observación -->
+                        <td>
+
+                            <span th:if="${solicitud.observacionAdmin != null
+                                and !#strings.isEmpty(solicitud.observacionAdmin)}"
+                                  th:text="${solicitud.observacionAdmin}">
+                            </span>
+
+                            <span th:unless="${solicitud.observacionAdmin != null
+                                and !#strings.isEmpty(solicitud.observacionAdmin)}"
+                                  class="text-muted">
+                                Sin observaciones
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
+</main>
+
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+</body>
+</html>

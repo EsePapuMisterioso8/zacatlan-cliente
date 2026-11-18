@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registrar venta - Zacatlán</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-success">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/vendedor}">Zacatlán</a>
+        <a class="btn btn-outline-light btn-sm" th:href="@{/logout}">Cerrar sesión</a>
+    </div>
+</nav>
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Registrar venta</h2>
+            <p class="text-muted mb-0">Registra una venta de los productos de tu inventario.</p>
+        </div>
+        <a th:href="@{/vendedor}" class="btn btn-secondary">Volver</a>
+    </div>
+
+    <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Datos de la venta</h5>
+        </div>
+
+        <div class="card-body">
+
+            <form th:action="@{/vendedor/ventas/registrar}" method="post">
+
+                <div class="mb-3">
+                    <label for="idProductoVendedor" class="form-label">Producto</label>
+
+                    <select class="form-select"
+                            id="idProductoVendedor"
+                            name="idProductoVendedor"
+                            required>
+
+                        <option value="">Selecciona un producto</option>
+
+                        <option th:each="producto : ${inventario}"
+                                th:if="${producto.activo}"
+                                th:value="${producto.idProductoVendedor}"
+                                th:text="${producto.nombreProducto + ' - $' + producto.precio}">
+                        </option>
+
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="cantidad" class="form-label">Cantidad</label>
+                    <input type="number"
+                           class="form-control"
+                           id="cantidad"
+                           name="cantidad"
+                           min="1"
+                           value="1"
+                           required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="precioVenta" class="form-label">Precio de venta por unidad ($)</label>
+                    <input type="number"
+                           class="form-control"
+                           id="precioVenta"
+                           name="precioVenta"
+                           min="0.01"
+                           step="0.01"
+                           placeholder="Ej. 85.00"
+                           required>
+                    <div class="form-text">
+                        Ingresa el precio al que realizarás la venta por unidad.
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    Registrar venta
+                </button>
+
+                <a th:href="@{/vendedor}" class="btn btn-outline-secondary">
+                    Cancelar
+                </a>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

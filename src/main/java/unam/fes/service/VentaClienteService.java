@@ -5,7 +5,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,10 +15,14 @@ public class VentaClienteService {
 
     private final RestClient restClient;
 
+    private static final ParameterizedTypeReference<List<Map<String, Object>>> TIPO_LISTA =
+            new ParameterizedTypeReference<>() {};
+
     public VentaClienteService(RestClient restClient) {
         this.restClient = restClient;
     }
 
+    // Registrar una venta
     public void registrarVenta(List<Map<String, Object>> items) {
 
         Map<String, Object> solicitud = new HashMap<>();
@@ -29,5 +33,87 @@ public class VentaClienteService {
                 .body(solicitud)
                 .retrieve()
                 .toBodilessEntity();
+    }
+
+    // Consultar todas las ventas
+    public List<Map<String, Object>> listarTodasLasVentas() {
+
+        return restClient.get()
+                .uri("/api/ventas")
+                .retrieve()
+                .body(TIPO_LISTA);
+    }
+
+    // Consultar ventas de un día
+    public List<Map<String, Object>> listarVentasPorDia(LocalDate fecha) {
+
+        return restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/ventas/dia")
+                        .queryParam("fecha", fecha)
+                        .build())
+                .retrieve()
+                .body(TIPO_LISTA);
+    }
+
+    // Consultar ventas por rango de fechas
+    public List<Map<String, Object>> listarVentasPorRango(
+            LocalDate fechaInicio,
+            LocalDate fechaFin) {
+
+        return restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/ventas/rango")
+                        .queryParam("fechaInicio", fechaInicio)
+                        .queryParam("fechaFin", fechaFin)
+                        .build())
+                .retrieve()
+                .body(TIPO_LISTA);
+    }
+
+    // Consultar ventas de un vendedor
+    public List<Map<String, Object>> listarVentasPorVendedor(Long idVendedor) {
+
+        return restClient.get()
+                .uri("/api/ventas/vendedor/{idVendedor}", idVendedor)
+                .retrieve()
+                .body(TIPO_LISTA);
+    }
+
+    // Consultar ventas de un vendedor por rango de fechas
+    public List<Map<String, Object>> listarVentasPorVendedorYRango(
+            Long idVendedor,
+            LocalDate fechaInicio,
+            LocalDate fechaFin) {
+
+        return restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/ventas/vendedor/{idVendedor}/rango")
+                        .queryParam("fechaInicio", fechaInicio)
+                        .queryParam("fechaFin", fechaFin)
+                        .build(idVendedor))
+                .retrieve()
+                .body(TIPO_LISTA);
+    }
+
+    // Consultar vendedores para llenar el filtro
+    public List<Map<String, Object>> listarVendedores() {
+
+        return restClient.get()
+                .uri("/api/vendedores")
+                .retrieve()
+                .body(TIPO_LISTA);
+    }
+
+    // Descargar reporte PDF desde la API
+    public byte[] descargarReportePdf(LocalDate fecha) {
+
+        return restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/ventas/reporte/pdf")
+                        .queryParam("fecha", fecha)
+                        .build())
+                .retrieve()
+                .body(byte[].class);
     }
 }

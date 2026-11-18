@@ -1,0 +1,254 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de usuarios | Zacatlán</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+</head>
+
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-dark shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/admin}">Zacatlán</a>
+        <span class="navbar-text text-white">Gestión de usuarios</span>
+        <a th:href="@{/logout}" class="btn btn-outline-light">Cerrar sesión</a>
+    </div>
+</nav>
+
+<main class="container py-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">Gestión de vendedores</h2>
+            <p class="text-muted mb-0">
+                Consulta y administra la información de los vendedores.
+            </p>
+        </div>
+        <a th:href="@{/admin}" class="btn btn-secondary">Volver al panel</a>
+    </div>
+
+    <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show">
+        <span th:text="${mensaje}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3">
+            <strong>Vendedores registrados</strong>
+            <span class="badge bg-primary ms-2"
+                  th:text="${#lists.size(vendedores)}">0</span>
+        </div>
+
+        <div class="card-body">
+
+            <div th:if="${#lists.isEmpty(vendedores)}"
+                 class="alert alert-info mb-0">
+                No hay vendedores registrados.
+            </div>
+
+            <div th:unless="${#lists.isEmpty(vendedores)}"
+                 class="table-responsive">
+
+                <table class="table table-hover table-striped align-middle">
+
+                    <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Usuario</th>
+                        <th>Teléfono</th>
+                        <th>Bloque asignado</th>
+                        <th>Estado de solicitud</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="vendedor : ${vendedores}">
+                        <td th:text="${vendedor.id}"></td>
+
+                        <td>
+                            <span th:text="${vendedor.nombre}"></span>
+                            <span th:text="${vendedor.apellido}"></span>
+                        </td>
+
+                        <td th:text="${vendedor.username}"></td>
+                        <td th:text="${vendedor.telefono}"></td>
+                        <td th:text="${vendedor.nombreBloque}"></td>
+
+                        <td>
+                            <span class="badge bg-info text-dark"
+                                  th:text="${vendedor.estadoSolicitud}">
+                            </span>
+                        </td>
+
+                        <td>
+                            <span th:if="${vendedor.activo}"
+                                  class="badge bg-success">
+                                Activo
+                            </span>
+
+                            <span th:unless="${vendedor.activo}"
+                                  class="badge bg-danger">
+                                Inactivo
+                            </span>
+                        </td>
+
+                        <td>
+                            <div class="d-flex flex-column gap-2">
+
+                                <button type="button"
+                                        class="btn btn-sm btn-primary"
+                                        data-bs-toggle="modal"
+                                        th:attr="data-bs-target='#modalEditar' + ${vendedor.id}">
+                                    Editar
+                                </button>
+
+                                <form th:if="${vendedor.activo}"
+                                      th:action="@{/admin/usuarios/{id}/estado(id=${vendedor.id})}"
+                                      method="post"
+                                      onsubmit="return confirm('¿Estás seguro de desactivar este vendedor?');">
+
+                                    <input type="hidden" name="activar" value="false">
+
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        Desactivar
+                                    </button>
+                                </form>
+
+                                <form th:unless="${vendedor.activo}"
+                                      th:action="@{/admin/usuarios/{id}/estado(id=${vendedor.id})}"
+                                      method="post"
+                                      onsubmit="return confirm('¿Estás seguro de activar este vendedor?');">
+
+                                    <input type="hidden" name="activar" value="true">
+
+                                    <button type="submit" class="btn btn-sm btn-success">
+                                        Activar
+                                    </button>
+                                </form>
+
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ventanas para editar vendedores -->
+    <div th:each="vendedor : ${vendedores}">
+        <div class="modal fade"
+             th:id="'modalEditar' + ${vendedor.id}"
+             tabindex="-1"
+             aria-hidden="true">
+
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+
+                    <form th:action="@{/admin/usuarios/{id}/editar(id=${vendedor.id})}"
+                          method="post">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                Editar vendedor
+                            </h5>
+                            <button type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <div class="mb-3">
+                                <label class="form-label">Nombre</label>
+                                <input type="text"
+                                       name="nombre"
+                                       class="form-control"
+                                       th:value="${vendedor.nombre}"
+                                       maxlength="100"
+                                       required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Apellido</label>
+                                <input type="text"
+                                       name="apellido"
+                                       class="form-control"
+                                       th:value="${vendedor.apellido}"
+                                       maxlength="100"
+                                       required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Teléfono</label>
+                                <input type="text"
+                                       name="telefono"
+                                       class="form-control"
+                                       th:value="${vendedor.telefono}"
+                                       maxlength="20"
+                                       required>
+                            </div>
+
+                            <hr>
+
+                            <div class="mb-3">
+                                <label class="form-label">Nombre de usuario</label>
+                                <input type="text"
+                                       class="form-control"
+                                       th:value="${vendedor.username}"
+                                       disabled>
+                                <div class="form-text">
+                                    El nombre de usuario no se puede modificar.
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Bloque asignado</label>
+                                <input type="text"
+                                       class="form-control"
+                                       th:value="${vendedor.nombreBloque}"
+                                       disabled>
+                                <div class="form-text">
+                                    El bloque asignado no se puede modificar.
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button"
+                                    class="btn btn-secondary"
+                                    data-bs-dismiss="modal">
+                                Cancelar
+                            </button>
+
+                            <button type="submit" class="btn btn-primary">
+                                Guardar cambios
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+</body>
+</html>

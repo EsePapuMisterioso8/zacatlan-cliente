@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Bitácora de movimientos - Zacatlán</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-success">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/admin}">Zacatlán</a>
+        <a class="btn btn-outline-light" th:href="@{/logout}">Cerrar sesión</a>
+    </div>
+</nav>
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Bitácora de movimientos</h2>
+            <p class="text-muted mb-0">
+                Consulta las acciones realizadas por los administradores.
+            </p>
+        </div>
+        <a th:href="@{/admin}" class="btn btn-secondary">
+            Volver al panel
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <strong>Movimientos registrados</strong>
+            <span class="badge bg-success ms-2"
+                  th:text="${#lists.size(historial)}">0</span>
+        </div>
+
+        <div class="card-body">
+
+            <div th:if="${#lists.isEmpty(historial)}"
+                 class="alert alert-info">
+                No hay movimientos registrados.
+            </div>
+
+            <div th:unless="${#lists.isEmpty(historial)}"
+                 class="table-responsive">
+
+                <table class="table table-striped table-hover align-middle">
+                    <thead class="table-success">
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha y hora</th>
+                        <th>Administrador</th>
+                        <th>Acción</th>
+                        <th>Entidad</th>
+                        <th>ID registro</th>
+                        <th>Descripción</th>
+                        <th>Datos anteriores</th>
+                        <th>Datos nuevos</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="movimiento : ${historial}">
+                        <td th:text="${movimiento.idMovimiento}"></td>
+                        <td th:text="${#temporals.format(movimiento.fechaHora, 'dd/MM/yyyy HH:mm:ss')}"></td>
+                        <td th:text="${movimiento.administrador}"></td>
+                        <td>
+                            <span class="badge bg-primary"
+                                  th:text="${movimiento.accion}"></span>
+                        </td>
+                        <td th:text="${movimiento.entidad}"></td>
+                        <td th:text="${movimiento.idRegistro}"></td>
+                        <td th:text="${movimiento.descripcion}"></td>
+                        <td th:text="${movimiento.datosAnteriores != null ? movimiento.datosAnteriores : 'Sin datos'}"></td>
+                        <td th:text="${movimiento.datosNuevos != null ? movimiento.datosNuevos : 'Sin datos'}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
+

@@ -1,59 +1,58 @@
+
 package unam.fes.service;
 
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import org.springframework.core.ParameterizedTypeReference;
 import unam.fes.model.ProductoDTO;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProductoClienteService {
 
     private final RestClient restClient;
 
-    // Se inyecta automáticamente el RestClient configurado con seguridad
     public ProductoClienteService(RestClient restClient) {
         this.restClient = restClient;
     }
 
     public List<ProductoDTO> obtenerTodos() {
-        return restClient.get()
-                .uri("/api/productos") // Ajusta la ruta según tu BloqueRestController/ProductoRestController
+        List<ProductoDTO> productos = restClient.get()
+                .uri("/api/productos")
                 .retrieve()
                 .body(new ParameterizedTypeReference<List<ProductoDTO>>() {});
+
+        return productos != null ? productos : List.of();
+    }
+
+    public void registrarProducto(
+            String nombre,
+            String descripcion,
+            Long idBloque) {
+
+        Map<String, Object> producto = new HashMap<>();
+        producto.put("nombre", nombre);
+        producto.put("descripcion", descripcion);
+
+        Map<String, Object> bloque = new HashMap<>();
+        bloque.put("id", idBloque);
+
+        producto.put("bloque", bloque);
+
+        restClient.post()
+                .uri("/api/productos")
+                .body(producto)
+                .retrieve()
+                .toBodilessEntity();
+    }
+
+    public void cambiarEstado(Long id) {
+        restClient.put()
+                .uri("/api/productos/{id}/estado", id)
+                .retrieve()
+                .toBodilessEntity();
     }
 }
-
-/*package unam.fes.service;
-
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpHeaders;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
-import unam.fes.model.ProductoDTO;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.List;
-
-@Service
-public class ProductoClienteService {
-    private final RestClient restClient = RestClient.builder()
-            .baseUrl("http://localhost:8080/api")
-            .build();
-
-    //Metodo para listar los productos
-    public List<ProductoDTO> listarProductos(String username, String password){
-        String auth = username + ":" + password;
-        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.US_ASCII));
-        String authHeader = "Basic " + new String(encodedAuth);
-
-        List<ProductoDTO> productos = restClient.get()
-                .uri("/productos")
-                .header(HttpHeaders.AUTHORIZATION, authHeader) // <--- ¡Esta es la llave!
-                .retrieve()
-                .body(new ParameterizedTypeReference<List<ProductoDTO>>() {});
-
-        return productos;
-    }
-}*/

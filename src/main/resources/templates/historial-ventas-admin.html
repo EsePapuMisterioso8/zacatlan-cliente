@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Historial de ventas</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+</head>
+<body>
+
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/admin}">Zacatlán</a>
+        <a class="btn btn-outline-light" th:href="@{/admin}">Volver al panel</a>
+    </div>
+</nav>
+
+<div class="container mt-4">
+
+    <h2>Historial de ventas</h2>
+    <p class="text-muted">
+        Consulta las ventas realizadas por todos los vendedores.
+    </p>
+
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-dark text-white">
+            Filtros de búsqueda
+        </div>
+
+        <div class="card-body">
+            <form method="get" th:action="@{/admin/ventas}">
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label for="fecha" class="form-label">
+                            Buscar ventas de un día
+                        </label>
+                        <input type="date"
+                               class="form-control"
+                               id="fecha"
+                               name="fecha"
+                               th:value="${fecha}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="idVendedor" class="form-label">
+                            Vendedor
+                        </label>
+                        <select class="form-select"
+                                id="idVendedor"
+                                name="idVendedor">
+                            <option value="">Todos los vendedores</option>
+
+                            <option th:each="vendedor : ${vendedores}"
+                                    th:value="${vendedor.id}"
+                                    th:text="${vendedor.nombre + ' ' + vendedor.apellido}"
+                                    th:selected="${idVendedor != null and idVendedor == vendedor.id}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="fechaInicio" class="form-label">
+                            Fecha inicial
+                        </label>
+                        <input type="date"
+                               class="form-control"
+                               id="fechaInicio"
+                               name="fechaInicio"
+                               th:value="${fechaInicio}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="fechaFin" class="form-label">
+                            Fecha final
+                        </label>
+                        <input type="date"
+                               class="form-control"
+                               id="fechaFin"
+                               name="fechaFin"
+                               th:value="${fechaFin}">
+                    </div>
+
+                </div>
+
+                <div class="mt-3 d-flex gap-2 flex-wrap">
+                    <button type="submit" class="btn btn-primary">
+                        Aplicar filtros
+                    </button>
+
+                    <a th:href="@{/admin/ventas}"
+                       class="btn btn-secondary">
+                        Mostrar todas
+                    </a>
+                </div>
+
+                <div class="form-text mt-2">
+                    Puedes combinar un vendedor con un rango de fechas.
+                    Para buscar por un día específico, utiliza únicamente
+                    el campo de fecha correspondiente.
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- Descargar reporte PDF -->
+    <div class="card shadow-sm mb-4" th:if="${fecha != null}">
+        <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h5 class="mb-1">Reporte diario de ventas</h5>
+                <p class="text-muted mb-0">
+                    Genera el PDF con las ventas del día seleccionado.
+                </p>
+            </div>
+
+            <a class="btn btn-danger"
+               th:href="@{/admin/ventas/reporte/pdf(fecha=${fecha})}">
+                Descargar reporte PDF
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+
+                    <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Vendedor</th>
+                        <th>Fecha y hora</th>
+                        <th>Total</th>
+                        <th>Método de pago</th>
+                        <th>Detalle</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="venta : ${ventas}">
+                        <td th:text="${venta.idVenta}"></td>
+
+                        <td th:text="${venta.nombreVendedor}"></td>
+
+                        <td th:text="${#strings.substring(venta.fechaHora, 8, 10)
+                            + '/' + #strings.substring(venta.fechaHora, 5, 7)
+                            + '/' + #strings.substring(venta.fechaHora, 0, 4)
+                            + ' ' + #strings.substring(venta.fechaHora, 11, 16)}"></td>
+
+                        <td th:text="${'$' + #numbers.formatDecimal(venta.total, 1, 2)}"></td>
+
+                        <td th:text="${venta.metodoPago}"></td>
+
+                        <td>
+                            <a class="btn btn-sm btn-primary"
+                               th:href="@{/admin/ventas/{id}(id=${venta.idVenta})}">
+                                Ver detalle
+                            </a>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(ventas)}">
+                        <td colspan="6" class="text-center text-muted">
+                            No hay ventas registradas.
+                        </td>
+                    </tr>
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

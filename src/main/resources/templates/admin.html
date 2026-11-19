@@ -1,23 +1,28 @@
+
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Panel de administración | Zacatlán</title>
 
     <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap/css/zacatlan-theme.css}">
 </head>
 
-<body class="bg-light">
+<body>
 
-<nav class="navbar navbar-dark bg-dark shadow-sm">
+<!-- Navegación -->
+<nav class="navbar navbar-dark shadow-sm">
     <div class="container">
 
         <a class="navbar-brand fw-bold" th:href="@{/admin}">
-            Zacatlán
+            ZACATLÁN
         </a>
 
-        <span class="navbar-text text-white">
+        <span class="navbar-text">
             Panel de administración
         </span>
 
@@ -30,103 +35,153 @@
 
 <main class="container py-5">
 
-    <div class="mb-4">
-        <h2 class="fw-bold">Bienvenido, administrador</h2>
+    <!-- Encabezado -->
+    <section class="mb-4">
+
+        <h2 class="fw-bold mb-2">
+            Bienvenido, administrador
+        </h2>
+
         <p class="text-muted mb-0">
             Desde aquí puedes gestionar los usuarios, productos y solicitudes de vendedores.
         </p>
-    </div>
 
-    <!-- Accesos de administración -->
-    <div class="card border-0 shadow-sm mb-4">
+    </section>
+
+    <!-- Menú de administración -->
+    <section class="card mb-4">
+
+        <div class="card-header">
+            <h5 class="mb-0 fw-bold">
+                Administración del sistema
+            </h5>
+        </div>
 
         <div class="card-body">
 
-            <h5 class="fw-bold mb-3">Administración del sistema</h5>
+            <p class="text-muted mb-4">
+                Selecciona el apartado que deseas administrar.
+            </p>
 
-            <div class="d-flex flex-wrap gap-2">
+            <div class="row g-3 admin-menu">
 
-                <a th:href="@{/admin/usuarios}"
-                   class="btn btn-primary">
-                    Gestión de usuarios
-                </a>
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <a th:href="@{/admin/usuarios}"
+                       class="btn w-100">
+                        Gestión de usuarios
+                    </a>
+                </div>
 
-                <a th:href="@{/admin/productos}"
-                   class="btn btn-success">
-                    Gestión de productos
-                </a>
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <a th:href="@{/admin/productos}"
+                       class="btn w-100">
+                        Gestión de productos
+                    </a>
+                </div>
 
-                <a th:href="@{/admin/bloques}"
-                   class="btn btn-outline-primary">
-                    Gestión de bloques
-                </a>
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <a th:href="@{/admin/bloques}"
+                       class="btn w-100">
+                        Gestión de bloques
+                    </a>
+                </div>
 
-                <a th:href="@{/admin/solicitudes-precio}"
-                   class="btn btn-warning">
-                    Solicitudes de cambio de precio
-                </a>
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <a th:href="@{/admin/solicitudes-precio}"
+                       class="btn w-100">
+                        Solicitudes de cambio de precio
+                    </a>
+                </div>
 
-                <a th:href="@{/admin/ventas}"
-                   class="btn btn-info">
-                    Consultar ventas
-                </a>
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <a th:href="@{/admin/ventas}"
+                       class="btn w-100">
+                        Consultar ventas
+                    </a>
+                </div>
 
-                <a th:href="@{/admin/reportes/ventas}"
-                   class="btn btn-dark">
-                    Reportes diarios
-                </a>
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <a th:href="@{/admin/reportes/ventas}"
+                       class="btn w-100">
+                        Reportes de ventas
+                    </a>
+                </div>
 
-                <a th:href="@{/admin/historial}"
-                   class="btn btn-secondary">
-                    Bitácora administrativa
-                </a>
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <a th:href="@{/admin/historial}"
+                       class="btn w-100">
+                        Bitácora administrativa
+                    </a>
+                </div>
 
             </div>
 
         </div>
-    </div>
+    </section>
 
     <!-- Mensajes de resultado -->
     <div th:if="${mensaje}"
-         class="alert alert-success alert-dismissible fade show"
+         class="alert alert-success alert-dismissible fade show mb-4"
          role="alert">
 
+        <strong>Operación realizada:</strong>
         <span th:text="${mensaje}"></span>
 
-        <button type="button" class="btn-close"
-                data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Cerrar">
+        </button>
+
     </div>
 
     <div th:if="${error}"
-         class="alert alert-danger alert-dismissible fade show"
+         class="alert alert-danger alert-dismissible fade show mb-4"
          role="alert">
 
+        <strong>Atención:</strong>
         <span th:text="${error}"></span>
 
-        <button type="button" class="btn-close"
-                data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Cerrar">
+        </button>
+
     </div>
 
-    <!-- Solicitudes pendientes de vendedores -->
-    <div class="card border-0 shadow-sm">
+    <!-- Solicitudes pendientes -->
+    <section class="card">
 
-        <div class="card-header bg-white py-3">
-            <h5 class="mb-0 fw-bold">Solicitudes pendientes</h5>
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+
+            <h5 class="mb-0 fw-bold">
+                Solicitudes pendientes de vendedores
+            </h5>
+
+            <span class="badge text-bg-warning">
+                Pendientes de revisión
+            </span>
+
         </div>
 
         <div class="card-body">
 
+            <!-- Sin solicitudes -->
             <div th:if="${#lists.isEmpty(solicitudes)}"
                  class="alert alert-info mb-0">
+
                 Actualmente no hay solicitudes pendientes.
+
             </div>
 
+            <!-- Tabla de solicitudes -->
             <div th:unless="${#lists.isEmpty(solicitudes)}"
                  class="table-responsive">
 
                 <table class="table table-hover align-middle">
 
-                    <thead class="table-dark">
+                    <thead>
                     <tr>
                         <th>Nombre</th>
                         <th>Teléfono</th>
@@ -141,7 +196,7 @@
 
                     <tr th:each="solicitud : ${solicitudes}">
 
-                        <td>
+                        <td class="fw-semibold">
                             <span th:text="${solicitud.nombre}"></span>
                             <span th:text="${solicitud.apellido}"></span>
                         </td>
@@ -159,7 +214,7 @@
                         </td>
 
                         <td>
-                            <div class="d-flex gap-2">
+                            <div class="d-flex flex-wrap gap-2">
 
                                 <form th:action="@{/admin/aprobar/{id}(id=${solicitud.id})}"
                                       method="post">
@@ -194,7 +249,14 @@
             </div>
 
         </div>
-    </div>
+    </section>
+
+    <!-- Pie de página -->
+    <footer class="text-center mt-5">
+        <p class="text-muted small mb-0">
+            Zacatlán | Sistema de administración
+        </p>
+    </footer>
 
 </main>
 

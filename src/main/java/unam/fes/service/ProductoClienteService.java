@@ -49,6 +49,22 @@ public class ProductoClienteService {
                 .toBodilessEntity();
     }
 
+    public void actualizarProducto(
+            Long id,
+            String nombre,
+            String descripcion) {
+
+        Map<String, Object> producto = new HashMap<>();
+        producto.put("nombre", nombre);
+        producto.put("descripcion", descripcion);
+
+        restClient.put()
+                .uri("/api/productos/{id}", id)
+                .body(producto)
+                .retrieve()
+                .toBodilessEntity();
+    }
+
     public void cambiarEstado(Long id) {
         restClient.put()
                 .uri("/api/productos/{id}/estado", id)

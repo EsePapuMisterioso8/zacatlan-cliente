@@ -1,0 +1,668 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Reportes de ventas | Zacatlán</title>
+
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap/css/zacatlan-theme.css}">
+</head>
+
+<body>
+
+<!-- Navegación -->
+<nav class="navbar navbar-dark shadow-sm">
+    <div class="container position-relative">
+
+        <a class="navbar-brand fw-bold" th:href="@{/admin}">
+            Zacatlán
+        </a>
+
+        <span class="navbar-text text-white position-absolute start-50 translate-middle-x d-none d-sm-inline">
+            Reportes de ventas
+        </span>
+
+        <a th:href="@{/logout}" class="btn btn-outline-light btn-sm">
+            Cerrar sesión
+        </a>
+
+    </div>
+</nav>
+
+<main class="container py-4">
+
+    <!-- Encabezado -->
+    <section class="mb-4">
+
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+
+            <div>
+                <h2 class="mb-2">Reportes de ventas</h2>
+                <p class="text-muted mb-0">
+                    Consulta el rendimiento de las ventas y revisa los movimientos
+                    realizados por los vendedores.
+                </p>
+            </div>
+
+            <a th:href="@{/admin}" class="btn btn-outline-secondary">
+                <span aria-hidden="true">←</span> Volver al panel
+            </a>
+
+        </div>
+
+    </section>
+
+    <!-- Mensajes -->
+    <div th:if="${mensaje}"
+         class="alert alert-success alert-dismissible fade show"
+         role="alert">
+
+        <span th:text="${mensaje}"></span>
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Cerrar">
+        </button>
+    </div>
+
+    <div th:if="${error}"
+         class="alert alert-danger alert-dismissible fade show"
+         role="alert">
+
+        <span th:text="${error}"></span>
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Cerrar">
+        </button>
+    </div>
+
+    <!-- Filtros -->
+    <section class="card mb-4">
+
+        <div class="card-header">
+            <h5 class="mb-1">Consultar información</h5>
+            <small class="text-muted">
+                Selecciona el periodo y los criterios del reporte.
+            </small>
+        </div>
+
+        <div class="card-body">
+
+            <form th:action="@{/admin/reportes/ventas}"
+                  method="get"
+                  id="formReporte">
+
+                <div class="row g-3 align-items-end">
+
+                    <!-- Tipo de reporte -->
+                    <div class="col-12 col-md-4">
+
+                        <label for="tipoReporte" class="form-label">
+                            Tipo de reporte
+                        </label>
+
+                        <select id="tipoReporte"
+                                name="tipoReporte"
+                                class="form-select">
+
+                            <option value="diario"
+                                    th:selected="${tipoReporte == 'diario'}">
+                                Reporte diario
+                            </option>
+
+                            <option value="rango"
+                                    th:selected="${tipoReporte == 'rango'}">
+                                Reporte por rango de fechas
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- Fecha diaria -->
+                    <div class="col-12 col-md-4" id="campoFecha">
+
+                        <label for="fecha" class="form-label">
+                            Seleccionar fecha
+                        </label>
+
+                        <input type="date"
+                               id="fecha"
+                               name="fecha"
+                               class="form-control"
+                               th:value="${fecha}">
+
+                    </div>
+
+                    <!-- Fecha inicial -->
+                    <div class="col-12 col-md-4" id="campoFechaInicio">
+
+                        <label for="fechaInicio" class="form-label">
+                            Fecha inicial
+                        </label>
+
+                        <input type="date"
+                               id="fechaInicio"
+                               name="fechaInicio"
+                               class="form-control"
+                               th:value="${fechaInicio}">
+
+                    </div>
+
+                    <!-- Fecha final -->
+                    <div class="col-12 col-md-4" id="campoFechaFin">
+
+                        <label for="fechaFin" class="form-label">
+                            Fecha final
+                        </label>
+
+                        <input type="date"
+                               id="fechaFin"
+                               name="fechaFin"
+                               class="form-control"
+                               th:value="${fechaFin}">
+
+                    </div>
+
+                    <!-- Producto -->
+                    <div class="col-12 col-md-6">
+
+                        <label for="producto" class="form-label">
+                            Buscar por producto
+                        </label>
+
+                        <input type="text"
+                               id="producto"
+                               name="producto"
+                               class="form-control"
+                               placeholder="Escribe el nombre del producto"
+                               th:value="${producto}">
+
+                    </div>
+
+                    <!-- Vendedor -->
+                    <div class="col-12 col-md-6">
+
+                        <label for="idVendedor" class="form-label">
+                            Filtrar por vendedor
+                        </label>
+
+                        <select id="idVendedor"
+                                name="idVendedor"
+                                class="form-select">
+
+                            <option value="">
+                                Todos los vendedores
+                            </option>
+
+                            <option th:each="vendedor : ${vendedores}"
+                                    th:value="${vendedor.id}"
+                                    th:text="${vendedor.nombre + ' ' + vendedor.apellido}"
+                                    th:selected="${idVendedor != null and idVendedor == vendedor.id}">
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- Acciones -->
+                    <div class="col-12">
+                        <div class="d-flex flex-wrap justify-content-between gap-2 pt-2">
+
+                            <a th:href="@{/admin/reportes/ventas}"
+                               class="btn btn-outline-secondary">
+                                Limpiar filtros
+                            </a>
+
+                            <button type="submit" class="btn btn-primary px-4">
+                                Consultar reporte
+                            </button>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </form>
+
+            <!-- Descargar PDF -->
+            <div class="border-top mt-4 pt-3">
+
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+
+                    <div>
+                        <strong>Exportar información</strong>
+                        <p class="text-muted small mb-0">
+                            Descarga el reporte en formato PDF.
+                        </p>
+                    </div>
+
+                    <div>
+
+                        <a th:if="${tipoReporte == 'diario'}"
+                           th:href="@{/admin/reportes/ventas/pdf(
+                               fecha=${fecha},
+                               producto=${producto},
+                               idVendedor=${idVendedor}
+                           )}"
+                           class="btn btn-danger">
+
+                            Descargar PDF diario
+
+                        </a>
+
+                        <a th:if="${tipoReporte == 'rango'}"
+                           th:href="@{/admin/reportes/ventas/pdf/rango(
+                               fechaInicio=${fechaInicio},
+                               fechaFin=${fechaFin},
+                               producto=${producto},
+                               idVendedor=${idVendedor}
+                           )}"
+                           class="btn btn-danger">
+
+                            Descargar PDF del rango
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Resumen -->
+    <section class="mb-4">
+
+        <h5 class="mb-3">Resumen del reporte</h5>
+
+        <div class="row g-3">
+
+            <!-- Cantidad de ventas -->
+            <div class="col-12 col-md-6">
+
+                <div class="card h-100">
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <div>
+                                <p class="text-muted fw-semibold mb-2">
+                                    Ventas realizadas
+                                </p>
+
+                                <h2 class="mb-0"
+                                    th:text="${cantidadVentas}">
+                                    0
+                                </h2>
+                            </div>
+
+                            <div class="rounded-3 p-3"
+                                 style="background: #e8effb; color: #2457a7;">
+                                <span class="fs-3 fw-bold">#</span>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Total vendido -->
+            <div class="col-12 col-md-6">
+
+                <div class="card h-100">
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <div>
+                                <p class="text-muted fw-semibold mb-2">
+                                    Total vendido
+                                </p>
+
+                                <h2 class="text-success mb-0">
+
+                                    $
+
+                                    <span th:if="${tipoReporte == 'rango'}"
+                                          th:text="${#numbers.formatDecimal(totalRango, 1, 2)}">
+                                        0.00
+                                    </span>
+
+                                    <span th:unless="${tipoReporte == 'rango'}"
+                                          th:text="${#numbers.formatDecimal(totalDia, 1, 2)}">
+                                        0.00
+                                    </span>
+
+                                </h2>
+                            </div>
+
+                            <div class="rounded-3 p-3"
+                                 style="background: #e7f5ed; color: #23845b;">
+                                <span class="fs-3 fw-bold">$</span>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Ventas por vendedor -->
+    <section class="card mb-4">
+
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+
+            <div>
+                <h5 class="mb-1">Ventas por vendedor</h5>
+                <small class="text-muted">
+                    Resumen de los ingresos correspondientes a cada vendedor.
+                </small>
+            </div>
+
+            <span class="badge text-bg-primary">
+                Resumen
+            </span>
+
+        </div>
+
+        <div class="card-body">
+
+            <div th:if="${#maps.isEmpty(ventasPorVendedor)}"
+                 class="alert alert-info mb-0">
+
+                No hay ventas registradas por vendedor con los filtros seleccionados.
+
+            </div>
+
+            <div th:unless="${#maps.isEmpty(ventasPorVendedor)}"
+                 class="table-responsive">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead>
+                    <tr>
+                        <th>Vendedor</th>
+                        <th>Total vendido</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+
+                    <tr th:each="registro : ${ventasPorVendedor}">
+
+                        <td class="fw-semibold"
+                            th:text="${registro.key}">
+                        </td>
+
+                        <td class="text-success fw-bold">
+
+                            $
+
+                            <span th:text="${#numbers.formatDecimal(registro.value, 1, 2)}">
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Detalle de ventas -->
+    <section class="card">
+
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+
+            <div>
+                <h5 class="mb-1">Detalle de ventas</h5>
+                <small class="text-muted">
+                    Consulta individual de las operaciones registradas.
+                </small>
+            </div>
+
+            <span class="badge text-bg-primary">
+                Historial
+            </span>
+
+        </div>
+
+        <div class="card-body">
+
+            <div th:if="${#lists.isEmpty(ventas)}"
+                 class="alert alert-info mb-0">
+
+                No se encontraron ventas con los filtros seleccionados.
+
+            </div>
+
+            <div th:unless="${#lists.isEmpty(ventas)}"
+                 class="table-responsive">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead>
+                    <tr>
+
+                        <th th:text="${tipoReporte == 'rango' ? 'Fecha y hora' : 'Hora'}">
+                            Fecha y hora
+                        </th>
+
+                        <th>Vendedor</th>
+
+                        <th>Método de pago</th>
+
+                        <th>Total</th>
+
+                    </tr>
+                    </thead>
+
+                    <tbody>
+
+                    <tr th:each="venta : ${ventas}">
+
+                        <!-- Fecha y hora -->
+                        <td th:if="${tipoReporte == 'rango'}"
+                            th:text="${#strings.substring(venta.fechaHora, 8, 10) + '/' +
+                                      #strings.substring(venta.fechaHora, 5, 7) + '/' +
+                                      #strings.substring(venta.fechaHora, 0, 4) + ' ' +
+                                      #strings.substring(venta.fechaHora, 11, 19)}">
+                        </td>
+
+                        <!-- Solo hora -->
+                        <td th:unless="${tipoReporte == 'rango'}"
+                            th:text="${#strings.substring(venta.fechaHora, 11, 19)}">
+                        </td>
+
+                        <td th:text="${venta.nombreVendedor}">
+                        </td>
+
+                        <td th:text="${venta.metodoPago}">
+                        </td>
+
+                        <td class="fw-bold">
+
+                            $
+
+                            <span th:text="${#numbers.formatDecimal(venta.total, 1, 2)}">
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Pie -->
+    <footer class="text-center mt-4">
+        <small class="text-muted">
+            Zacatlán | Administración de reportes de ventas
+        </small>
+    </footer>
+
+</main>
+
+<!-- Validaciones de fechas -->
+<script>
+
+    const tipoReporte = document.getElementById("tipoReporte");
+
+    const campoFecha = document.getElementById("campoFecha");
+    const campoFechaInicio = document.getElementById("campoFechaInicio");
+    const campoFechaFin = document.getElementById("campoFechaFin");
+
+    const fecha = document.getElementById("fecha");
+    const fechaInicio = document.getElementById("fechaInicio");
+    const fechaFin = document.getElementById("fechaFin");
+
+    const formReporte = document.getElementById("formReporte");
+
+    // Obtener fecha actual en formato YYYY-MM-DD
+    const ahora = new Date();
+
+    const hoy = [
+        ahora.getFullYear(),
+        String(ahora.getMonth() + 1).padStart(2, "0"),
+        String(ahora.getDate()).padStart(2, "0")
+    ].join("-");
+
+    // Impedir seleccionar fechas futuras
+    fecha.max = hoy;
+    fechaInicio.max = hoy;
+    fechaFin.max = hoy;
+
+    // Mostrar los campos según el tipo de reporte
+    function actualizarCamposFecha() {
+
+        const esRango = tipoReporte.value === "rango";
+
+        campoFecha.style.display = esRango ? "none" : "block";
+
+        campoFechaInicio.style.display = esRango ? "block" : "none";
+
+        campoFechaFin.style.display = esRango ? "block" : "none";
+
+        fecha.required = !esRango;
+        fechaInicio.required = esRango;
+        fechaFin.required = esRango;
+
+        fecha.disabled = esRango;
+        fechaInicio.disabled = !esRango;
+        fechaFin.disabled = !esRango;
+
+        validarFechas();
+    }
+
+    // Validar fechas seleccionadas
+    function validarFechas() {
+
+        fecha.setCustomValidity("");
+        fechaInicio.setCustomValidity("");
+        fechaFin.setCustomValidity("");
+
+        // Reporte diario
+        if (tipoReporte.value === "diario") {
+
+            if (fecha.value && fecha.value > hoy) {
+
+                fecha.setCustomValidity(
+                    "No puedes seleccionar una fecha futura."
+                );
+
+            }
+
+            return;
+        }
+
+        // Fecha inicial
+        if (fechaInicio.value && fechaInicio.value > hoy) {
+
+            fechaInicio.setCustomValidity(
+                "La fecha inicial no puede ser futura."
+            );
+
+        }
+
+        // Fecha final
+        if (fechaFin.value && fechaFin.value > hoy) {
+
+            fechaFin.setCustomValidity(
+                "La fecha final no puede ser futura."
+            );
+
+        }
+
+        // Orden del rango
+        if (fechaInicio.value &&
+            fechaFin.value &&
+            fechaFin.value < fechaInicio.value) {
+
+            fechaFin.setCustomValidity(
+                "La fecha final no puede ser anterior a la fecha inicial."
+            );
+
+        }
+
+    }
+
+    // Escuchar cambios en las fechas
+    fecha.addEventListener("change", validarFechas);
+
+    fechaInicio.addEventListener("change", validarFechas);
+
+    fechaFin.addEventListener("change", validarFechas);
+
+    tipoReporte.addEventListener("change", actualizarCamposFecha);
+
+    // Validar antes de enviar
+    formReporte.addEventListener("submit", function(event) {
+
+        validarFechas();
+
+        if (!formReporte.checkValidity()) {
+
+            event.preventDefault();
+
+            formReporte.reportValidity();
+
+        }
+
+    });
+
+    // Inicializar formulario
+    actualizarCamposFecha();
+
+</script>
+
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+</body>
+</html>

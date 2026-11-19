@@ -9,35 +9,37 @@
     <title>Solicitudes de cambio de precio | Zacatlán</title>
 
     <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap/css/zacatlan-theme.css}">
 </head>
 
 <body class="bg-light">
 
-<nav class="navbar navbar-dark bg-dark shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
     <div class="container">
 
         <a class="navbar-brand fw-bold" th:href="@{/vendedor}">
             Zacatlán
         </a>
 
-        <span class="navbar-text text-white">
+        <span class="navbar-text text-white d-none d-md-inline">
             Solicitudes de cambio de precio
         </span>
 
-        <a th:href="@{/logout}" class="btn btn-outline-light">
+        <a th:href="@{/logout}" class="btn btn-outline-light btn-sm">
             Cerrar sesión
         </a>
 
     </div>
 </nav>
 
-<main class="container py-5">
+<main class="container py-4 py-lg-5">
 
     <!-- Encabezado -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div class="d-flex flex-column flex-md-row justify-content-between
+                align-items-md-center gap-3 mb-4">
 
         <div>
-            <h2 class="fw-bold">Solicitudes de cambio de precio</h2>
+            <h2 class="fw-bold mb-1">Solicitudes de cambio de precio</h2>
 
             <p class="text-muted mb-0">
                 Solicita cambios de precio y consulta el estado de tus solicitudes.
@@ -50,9 +52,9 @@
 
     </div>
 
-    <!-- Mensaje de éxito -->
+    <!-- Mensajes -->
     <div th:if="${mensaje}"
-         class="alert alert-success alert-dismissible fade show"
+         class="alert alert-success alert-dismissible fade show shadow-sm"
          role="alert">
 
         <span th:text="${mensaje}"></span>
@@ -65,9 +67,8 @@
 
     </div>
 
-    <!-- Mensaje de error -->
     <div th:if="${error}"
-         class="alert alert-danger alert-dismissible fade show"
+         class="alert alert-danger alert-dismissible fade show shadow-sm"
          role="alert">
 
         <span th:text="${error}"></span>
@@ -80,82 +81,128 @@
 
     </div>
 
-    <!-- Formulario para solicitar cambio de precio -->
+    <!-- Nueva solicitud -->
     <div class="card border-0 shadow-sm mb-4">
 
-        <div class="card-header bg-white py-3">
-            <h5 class="fw-bold mb-0">
+        <div class="card-header bg-dark text-white py-3">
+            <h5 class="fw-semibold mb-0">
                 Nueva solicitud de cambio de precio
             </h5>
         </div>
 
-        <div class="card-body">
+        <div class="card-body p-3 p-md-4">
 
-            <p class="text-muted">
+            <p class="text-muted mb-4">
                 Selecciona uno de tus productos activos e indica el nuevo precio.
                 El administrador deberá autorizar la solicitud para que el cambio
                 se aplique.
             </p>
 
+            <!-- Sin productos -->
             <div th:if="${#lists.isEmpty(inventario)}"
                  class="alert alert-info mb-0">
 
-                No tienes productos registrados en tu inventario.
+                <strong>Tu inventario está vacío.</strong>
 
-                Agrega productos antes de solicitar cambios de precio.
+                <p class="mb-0 mt-1">
+                    Agrega productos antes de solicitar cambios de precio.
+                </p>
 
             </div>
 
+            <!-- Formulario -->
             <form th:unless="${#lists.isEmpty(inventario)}"
                   th:action="@{/vendedor/solicitudes-precio/crear}"
-                  method="post">
+                  method="post"
+                  id="formularioSolicitud">
 
                 <div class="row g-3 align-items-end">
 
                     <!-- Producto -->
-                    <div class="col-md-6">
+                    <div class="col-12 col-lg-6">
 
-                        <label for="idProductoVendedor"
+                        <label for="buscarProductoSolicitud"
                                class="form-label fw-semibold">
-
                             Producto
-
                         </label>
 
-                        <select class="form-select"
-                                id="idProductoVendedor"
-                                name="idProductoVendedor"
-                                required>
+                        <input type="hidden"
+                               id="idProductoVendedor"
+                               name="idProductoVendedor">
 
-                            <option value="">
-                                Selecciona un producto
-                            </option>
+                        <div class="position-relative">
 
-                            <th:block th:each="producto : ${inventario}">
+                            <input type="text"
+                                   class="form-control"
+                                   id="buscarProductoSolicitud"
+                                   placeholder="Escribe el nombre del producto..."
+                                   autocomplete="off"
+                                   required>
 
-                                <option th:if="${producto.activo == true}"
-                                        th:value="${producto.idProductoVendedor}"
-                                        th:text="${producto.nombreProducto + ' - Precio actual: $' + #numbers.formatDecimal(producto.precio, 1, 2)}">
-                                </option>
+                            <div id="sugerenciasProductos"
+                                 class="list-group position-absolute w-100 shadow"
+                                 style="z-index: 1050; max-height: 250px; overflow-y: auto; display: none;">
 
-                            </th:block>
+                                <th:block th:each="producto : ${inventario}">
 
-                        </select>
+                                    <button th:if="${producto.activo == true}"
+                                            type="button"
+                                            class="list-group-item list-group-item-action sugerencia-producto"
+                                            th:attr="data-id=${producto.idProductoVendedor},
+                                                     data-nombre=${producto.nombreProducto},
+                                                     data-precio=${producto.precio}">
+
+                                        <span class="fw-semibold"
+                                              th:text="${producto.nombreProducto}">
+                                        </span>
+
+                                        <br>
+
+                                        <small class="text-muted">
+                                            Precio actual:
+                                            $<span th:text="${#numbers.formatDecimal(producto.precio, 1, 2)}"></span>
+                                        </small>
+
+                                    </button>
+
+                                </th:block>
+
+                            </div>
+
+                        </div>
 
                         <div class="form-text">
-                            Solo puedes solicitar cambios para productos activos.
+                            Busca entre tus productos activos y selecciona uno.
+                        </div>
+
+                        <div id="productoSeleccionado"
+                             class="small text-success mt-2"
+                             style="display: none;">
+
+                            <span class="fw-semibold">
+                                Producto seleccionado:
+                            </span>
+
+                            <span id="nombreProductoSeleccionado"></span>
+
+                        </div>
+
+                        <div id="sinProductosCoincidentes"
+                             class="small text-muted mt-2"
+                             style="display: none;">
+
+                            No se encontraron productos con ese nombre.
+
                         </div>
 
                     </div>
 
                     <!-- Nuevo precio -->
-                    <div class="col-md-4">
+                    <div class="col-12 col-md-7 col-lg-4">
 
                         <label for="precioSolicitado"
                                class="form-label fw-semibold">
-
                             Nuevo precio
-
                         </label>
 
                         <div class="input-group">
@@ -176,13 +223,11 @@
                     </div>
 
                     <!-- Botón -->
-                    <div class="col-md-2">
+                    <div class="col-12 col-md-5 col-lg-2">
 
                         <button type="submit"
                                 class="btn btn-primary w-100">
-
                             Solicitar
-
                         </button>
 
                     </div>
@@ -194,18 +239,18 @@
         </div>
     </div>
 
-    <!-- Historial de solicitudes -->
+    <!-- Historial -->
     <div class="card border-0 shadow-sm">
 
-        <div class="card-header bg-white py-3">
+        <div class="card-header bg-dark text-white py-3">
 
-            <h5 class="fw-bold mb-0">
+            <h5 class="fw-semibold mb-0">
                 Historial de mis solicitudes
             </h5>
 
         </div>
 
-        <div class="card-body">
+        <div class="card-body p-3 p-md-4">
 
             <!-- Sin solicitudes -->
             <div th:if="${#lists.isEmpty(solicitudes)}"
@@ -215,110 +260,233 @@
 
             </div>
 
-            <!-- Tabla del historial -->
-            <div th:unless="${#lists.isEmpty(solicitudes)}"
-                 class="table-responsive">
+            <div th:unless="${#lists.isEmpty(solicitudes)}">
 
-                <table class="table table-hover align-middle">
+                <!-- Filtros -->
+                <div class="border rounded-3 p-3 p-md-4 mb-4">
 
-                    <thead class="table-dark">
+                    <div class="d-flex flex-column flex-sm-row
+                                justify-content-between gap-2 mb-3">
 
-                    <tr>
-                        <th>ID</th>
-                        <th>Producto</th>
-                        <th>Precio actual</th>
-                        <th>Precio solicitado</th>
-                        <th>Fecha de solicitud</th>
-                        <th>Fecha de respuesta</th>
-                        <th>Estado</th>
-                        <th>Observación del administrador</th>
-                    </tr>
+                        <div>
+                            <h6 class="fw-bold mb-1">
+                                Filtros de búsqueda
+                            </h6>
 
-                    </thead>
+                            <small class="text-muted">
+                                Filtra tus solicitudes por producto, estado o fecha.
+                            </small>
+                        </div>
 
-                    <tbody>
+                        <button type="button"
+                                id="limpiarFiltros"
+                                class="btn btn-outline-secondary btn-sm">
+                            Limpiar filtros
+                        </button>
 
-                    <tr th:each="solicitud : ${solicitudes}">
+                    </div>
 
-                        <!-- ID -->
-                        <td th:text="${solicitud.idSolicitud}"></td>
+                    <div class="row g-3">
 
-                        <!-- Producto -->
-                        <td class="fw-semibold"
-                            th:text="${solicitud.nombreProducto}">
-                        </td>
+                        <div class="col-12 col-md-6 col-lg-3">
 
-                        <!-- Precio actual -->
-                        <td>
-                            $<span th:text="${#numbers.formatDecimal(solicitud.precioActual, 1, 2)}"></span>
-                        </td>
+                            <label for="buscarProducto"
+                                   class="form-label fw-semibold">
+                                Buscar producto
+                            </label>
 
-                        <!-- Precio solicitado -->
-                        <td>
-                            $<span th:text="${#numbers.formatDecimal(solicitud.precioSolicitado, 1, 2)}"></span>
-                        </td>
+                            <input type="text"
+                                   id="buscarProducto"
+                                   class="form-control"
+                                   placeholder="Nombre del producto...">
 
-                        <!-- Fecha de solicitud -->
-                        <td th:text="${solicitud.fechaSolicitud != null
-                            ? #temporals.format(solicitud.fechaSolicitud, 'dd/MM/yyyy HH:mm')
-                            : 'No disponible'}">
-                        </td>
+                        </div>
 
-                        <!-- Fecha de respuesta -->
-                        <td>
+                        <div class="col-12 col-md-6 col-lg-3">
 
-                            <span th:if="${solicitud.fechaRespuesta != null}"
-                                  th:text="${#temporals.format(solicitud.fechaRespuesta, 'dd/MM/yyyy HH:mm')}">
-                            </span>
+                            <label for="filtroEstado"
+                                   class="form-label fw-semibold">
+                                Estado
+                            </label>
 
-                            <span th:unless="${solicitud.fechaRespuesta != null}"
-                                  class="text-muted">
-                                Pendiente
-                            </span>
+                            <select id="filtroEstado" class="form-select">
 
-                        </td>
+                                <option value="todos">
+                                    Todos los estados
+                                </option>
 
-                        <!-- Estado -->
-                        <td>
+                                <option value="PENDIENTE">
+                                    Pendientes
+                                </option>
 
-                            <span th:if="${solicitud.estado == 'PENDIENTE'}"
-                                  class="badge text-bg-warning">
-                                Pendiente
-                            </span>
+                                <option value="APLICADA">
+                                    Autorizadas
+                                </option>
 
-                            <span th:if="${solicitud.estado == 'APLICADA'}"
-                                  class="badge text-bg-success">
-                                Autorizada
-                            </span>
+                                <option value="RECHAZADA">
+                                    Rechazadas
+                                </option>
 
-                            <span th:if="${solicitud.estado == 'RECHAZADA'}"
-                                  class="badge text-bg-danger">
-                                Rechazada
-                            </span>
+                            </select>
 
-                        </td>
+                        </div>
 
-                        <!-- Observación -->
-                        <td>
+                        <div class="col-12 col-md-6 col-lg-3">
 
-                            <span th:if="${solicitud.observacionAdmin != null
-                                and !#strings.isEmpty(solicitud.observacionAdmin)}"
-                                  th:text="${solicitud.observacionAdmin}">
-                            </span>
+                            <label for="fechaInicio"
+                                   class="form-label fw-semibold">
+                                Desde
+                            </label>
 
-                            <span th:unless="${solicitud.observacionAdmin != null
-                                and !#strings.isEmpty(solicitud.observacionAdmin)}"
-                                  class="text-muted">
-                                Sin observaciones
-                            </span>
+                            <input type="date"
+                                   id="fechaInicio"
+                                   class="form-control">
 
-                        </td>
+                        </div>
 
-                    </tr>
+                        <div class="col-12 col-md-6 col-lg-3">
 
-                    </tbody>
+                            <label for="fechaFin"
+                                   class="form-label fw-semibold">
+                                Hasta
+                            </label>
 
-                </table>
+                            <input type="date"
+                                   id="fechaFin"
+                                   class="form-control">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Resultados -->
+                <div class="d-flex justify-content-between
+                            align-items-center flex-wrap gap-2 mb-3">
+
+                    <h6 class="fw-bold mb-0">
+                        Mis solicitudes registradas
+                    </h6>
+
+                    <span class="badge text-bg-primary px-3 py-2"
+                          th:text="${#lists.size(solicitudes)} + ' solicitudes'">
+                    </span>
+
+                </div>
+
+                <!-- Tabla -->
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead class="table-dark">
+
+                        <tr>
+                            <th class="px-3 py-3">Producto</th>
+                            <th class="py-3">Precio actual</th>
+                            <th class="py-3">Precio solicitado</th>
+                            <th class="py-3">Fecha de solicitud</th>
+                            <th class="py-3">Fecha de respuesta</th>
+                            <th class="py-3">Estado</th>
+                            <th class="py-3">Observación del administrador</th>
+                        </tr>
+
+                        </thead>
+
+                        <tbody id="tablaSolicitudes">
+
+                        <tr th:each="solicitud : ${solicitudes}"
+                            th:attr="data-producto=${solicitud.nombreProducto != null ? #strings.toLowerCase(solicitud.nombreProducto) : ''},
+                                     data-estado=${solicitud.estado},
+                                     data-fecha=${solicitud.fechaSolicitud != null ? #temporals.format(solicitud.fechaSolicitud, 'yyyy-MM-dd') : ''}">
+
+                            <td class="px-3 fw-semibold"
+                                th:text="${solicitud.nombreProducto}">
+                            </td>
+
+                            <td>
+                                $<span th:text="${#numbers.formatDecimal(solicitud.precioActual, 1, 2)}"></span>
+                            </td>
+
+                            <td class="fw-bold text-primary">
+                                $<span th:text="${#numbers.formatDecimal(solicitud.precioSolicitado, 1, 2)}"></span>
+                            </td>
+
+                            <td>
+
+                                <span th:if="${solicitud.fechaSolicitud != null}"
+                                      th:text="${#temporals.format(solicitud.fechaSolicitud, 'dd/MM/yyyy HH:mm')}">
+                                </span>
+
+                                <span th:unless="${solicitud.fechaSolicitud != null}"
+                                      class="text-muted">
+                                    No disponible
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <span th:if="${solicitud.fechaRespuesta != null}"
+                                      th:text="${#temporals.format(solicitud.fechaRespuesta, 'dd/MM/yyyy HH:mm')}">
+                                </span>
+
+                                <span th:unless="${solicitud.fechaRespuesta != null}"
+                                      class="text-muted">
+                                    Pendiente
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <span th:if="${solicitud.estado == 'PENDIENTE'}"
+                                      class="badge text-bg-warning px-3 py-2">
+                                    Pendiente
+                                </span>
+
+                                <span th:if="${solicitud.estado == 'APLICADA'}"
+                                      class="badge text-bg-success px-3 py-2">
+                                    Autorizada
+                                </span>
+
+                                <span th:if="${solicitud.estado == 'RECHAZADA'}"
+                                      class="badge text-bg-danger px-3 py-2">
+                                    Rechazada
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <span th:if="${solicitud.observacionAdmin != null
+                                    and !#strings.isEmpty(solicitud.observacionAdmin)}"
+                                      th:text="${solicitud.observacionAdmin}">
+                                </span>
+
+                                <span th:unless="${solicitud.observacionAdmin != null
+                                    and !#strings.isEmpty(solicitud.observacionAdmin)}"
+                                      class="text-muted">
+                                    Sin observaciones
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                        </tbody>
+
+                    </table>
+
+                    <div id="sinResultados"
+                         class="alert alert-warning text-center mt-3 mb-0 d-none">
+
+                        No se encontraron solicitudes con los filtros seleccionados.
+
+                    </div>
+
+                </div>
 
             </div>
 
@@ -328,6 +496,220 @@
 </main>
 
 <script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        // ==========================================
+        // BUSCADOR PARA SELECCIONAR PRODUCTO
+        // ==========================================
+
+        const buscadorSolicitud = document.getElementById("buscarProductoSolicitud");
+        const idProductoVendedor = document.getElementById("idProductoVendedor");
+        const sugerenciasProductos = document.getElementById("sugerenciasProductos");
+        const productoSeleccionado = document.getElementById("productoSeleccionado");
+        const nombreProductoSeleccionado = document.getElementById("nombreProductoSeleccionado");
+        const sinProductosCoincidentes = document.getElementById("sinProductosCoincidentes");
+        const formularioSolicitud = document.getElementById("formularioSolicitud");
+
+        if (buscadorSolicitud) {
+
+            const sugerencias = document.querySelectorAll(".sugerencia-producto");
+
+            function ocultarSugerencias() {
+                sugerenciasProductos.style.display = "none";
+            }
+
+            function mostrarSugerencias() {
+
+                const texto = buscadorSolicitud.value.trim().toLowerCase();
+
+                let coincidencias = 0;
+
+                idProductoVendedor.value = "";
+                productoSeleccionado.style.display = "none";
+
+                sugerencias.forEach(function (sugerencia) {
+
+                    const nombre = sugerencia.dataset.nombre.toLowerCase();
+
+                    const coincide = nombre.includes(texto);
+
+                    sugerencia.style.display = coincide ? "" : "none";
+
+                    if (coincide) {
+                        coincidencias++;
+                    }
+
+                });
+
+                sinProductosCoincidentes.style.display =
+                    texto !== "" && coincidencias === 0 ? "block" : "none";
+
+                if (coincidencias > 0) {
+                    sugerenciasProductos.style.display = "block";
+                } else {
+                    ocultarSugerencias();
+                }
+
+            }
+
+            buscadorSolicitud.addEventListener("focus", mostrarSugerencias);
+            buscadorSolicitud.addEventListener("input", mostrarSugerencias);
+
+            sugerencias.forEach(function (sugerencia) {
+
+                sugerencia.addEventListener("click", function () {
+
+                    const id = this.dataset.id;
+                    const nombre = this.dataset.nombre;
+                    const precio = Number(this.dataset.precio);
+
+                    idProductoVendedor.value = id;
+
+                    buscadorSolicitud.value =
+                        nombre + " - Precio actual: $" + precio.toFixed(2);
+
+                    nombreProductoSeleccionado.textContent = nombre;
+                    productoSeleccionado.style.display = "block";
+
+                    sinProductosCoincidentes.style.display = "none";
+
+                    ocultarSugerencias();
+
+                });
+
+            });
+
+            document.addEventListener("click", function (event) {
+
+                if (!buscadorSolicitud.parentElement.contains(event.target)) {
+                    ocultarSugerencias();
+                }
+
+            });
+
+            formularioSolicitud.addEventListener("submit", function (event) {
+
+                if (!idProductoVendedor.value) {
+
+                    event.preventDefault();
+
+                    buscadorSolicitud.setCustomValidity(
+                        "Debes buscar y seleccionar un producto de la lista."
+                    );
+
+                    buscadorSolicitud.reportValidity();
+
+                    buscadorSolicitud.focus();
+
+                }
+
+            });
+
+            buscadorSolicitud.addEventListener("input", function () {
+                buscadorSolicitud.setCustomValidity("");
+            });
+
+        }
+
+        // ==========================================
+        // FILTROS DEL HISTORIAL DE SOLICITUDES
+        // ==========================================
+
+        const buscarProducto = document.getElementById("buscarProducto");
+        const filtroEstado = document.getElementById("filtroEstado");
+        const fechaInicio = document.getElementById("fechaInicio");
+        const fechaFin = document.getElementById("fechaFin");
+        const limpiarFiltros = document.getElementById("limpiarFiltros");
+
+        const filas = document.querySelectorAll("#tablaSolicitudes tr");
+        const sinResultados = document.getElementById("sinResultados");
+
+        if (buscarProducto) {
+
+            function aplicarFiltros() {
+
+                const producto = buscarProducto.value.trim().toLowerCase();
+                const estado = filtroEstado.value;
+                const inicio = fechaInicio.value;
+                const fin = fechaFin.value;
+
+                fechaInicio.setCustomValidity("");
+                fechaFin.setCustomValidity("");
+
+                if (inicio && fin && inicio > fin) {
+
+                    fechaFin.setCustomValidity(
+                        "La fecha final no puede ser anterior a la fecha inicial."
+                    );
+
+                    fechaFin.reportValidity();
+
+                    return;
+                }
+
+                let solicitudesVisibles = 0;
+
+                filas.forEach(function (fila) {
+
+                    const nombreProducto = fila.dataset.producto || "";
+                    const estadoSolicitud = fila.dataset.estado || "";
+                    const fechaSolicitud = fila.dataset.fecha || "";
+
+                    const coincideProducto =
+                        nombreProducto.includes(producto);
+
+                    const coincideEstado =
+                        estado === "todos" || estadoSolicitud === estado;
+
+                    const coincideFechaInicio =
+                        !inicio || (fechaSolicitud && fechaSolicitud >= inicio);
+
+                    const coincideFechaFin =
+                        !fin || (fechaSolicitud && fechaSolicitud <= fin);
+
+                    const mostrar =
+                        coincideProducto &&
+                        coincideEstado &&
+                        coincideFechaInicio &&
+                        coincideFechaFin;
+
+                    fila.style.display = mostrar ? "" : "none";
+
+                    if (mostrar) {
+                        solicitudesVisibles++;
+                    }
+
+                });
+
+                sinResultados.classList.toggle(
+                    "d-none",
+                    solicitudesVisibles > 0
+                );
+
+            }
+
+            buscarProducto.addEventListener("input", aplicarFiltros);
+            filtroEstado.addEventListener("change", aplicarFiltros);
+            fechaInicio.addEventListener("change", aplicarFiltros);
+            fechaFin.addEventListener("change", aplicarFiltros);
+
+            limpiarFiltros.addEventListener("click", function () {
+
+                buscarProducto.value = "";
+                filtroEstado.value = "todos";
+                fechaInicio.value = "";
+                fechaFin.value = "";
+
+                aplicarFiltros();
+
+            });
+
+        }
+
+    });
+</script>
 
 </body>
 </html>

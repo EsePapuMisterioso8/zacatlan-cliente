@@ -5,174 +5,293 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de usuarios | Zacatlán</title>
+
     <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap/css/zacatlan-theme.css}">
 </head>
 
-<body class="bg-light">
+<body>
 
-<nav class="navbar navbar-dark bg-dark shadow-sm">
+<nav class="navbar navbar-dark shadow-sm">
     <div class="container">
-        <a class="navbar-brand fw-bold" th:href="@{/admin}">Zacatlán</a>
-        <span class="navbar-text text-white">Gestión de usuarios</span>
-        <a th:href="@{/logout}" class="btn btn-outline-light">Cerrar sesión</a>
+        <a class="navbar-brand fw-bold" th:href="@{/admin}">
+            Zacatlán
+        </a>
+
+        <span class="navbar-text text-white">
+            Gestión de usuarios
+        </span>
+
+        <a th:href="@{/logout}" class="btn btn-outline-light btn-sm">
+            Cerrar sesión
+        </a>
     </div>
 </nav>
 
-<main class="container py-5">
+<main class="container py-4 py-md-5">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- Encabezado -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
         <div>
-            <h2 class="fw-bold">Gestión de vendedores</h2>
+            <h2 class="fw-bold mb-1">Gestión de vendedores</h2>
             <p class="text-muted mb-0">
-                Consulta y administra la información de los vendedores.
+                Consulta, edita y administra la información de los vendedores registrados.
             </p>
         </div>
-        <a th:href="@{/admin}" class="btn btn-secondary">Volver al panel</a>
+
+        <a th:href="@{/admin}" class="btn btn-outline-secondary">
+            <span aria-hidden="true">←</span> Volver al panel
+        </a>
     </div>
 
-    <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show">
+    <!-- Mensajes -->
+    <div th:if="${mensaje}"
+         class="alert alert-success alert-dismissible fade show shadow-sm"
+         role="alert">
         <span th:text="${mensaje}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <button type="button" class="btn-close"
+                data-bs-dismiss="alert" aria-label="Cerrar"></button>
     </div>
 
-    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+    <div th:if="${error}"
+         class="alert alert-danger alert-dismissible fade show shadow-sm"
+         role="alert">
         <span th:text="${error}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <button type="button" class="btn-close"
+                data-bs-dismiss="alert" aria-label="Cerrar"></button>
     </div>
 
+    <!-- Contenido principal -->
     <div class="card border-0 shadow-sm">
+
         <div class="card-header bg-white py-3">
-            <strong>Vendedores registrados</strong>
-            <span class="badge bg-primary ms-2"
-                  th:text="${#lists.size(vendedores)}">0</span>
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div>
+                    <h5 class="fw-bold mb-1">Vendedores registrados</h5>
+                    <small class="text-muted">
+                        Administración de cuentas y datos de contacto
+                    </small>
+                </div>
+
+                <span class="badge text-bg-primary rounded-pill px-3 py-2"
+                      th:text="${#lists.size(vendedores)} + ' vendedores'">
+                    0 vendedores
+                </span>
+            </div>
         </div>
 
-        <div class="card-body">
+        <div class="card-body p-3 p-md-4">
 
             <div th:if="${#lists.isEmpty(vendedores)}"
                  class="alert alert-info mb-0">
                 No hay vendedores registrados.
             </div>
 
-            <div th:unless="${#lists.isEmpty(vendedores)}"
-                 class="table-responsive">
+            <div th:unless="${#lists.isEmpty(vendedores)}">
 
-                <table class="table table-hover table-striped align-middle">
+                <!-- Filtros -->
+                <div class="bg-light rounded-3 p-3 mb-4">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <span class="text-primary">⌕</span>
+                        <h6 class="fw-bold mb-0">Buscar y filtrar vendedores</h6>
+                    </div>
 
-                    <thead class="table-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Usuario</th>
-                        <th>Teléfono</th>
-                        <th>Bloque asignado</th>
-                        <th>Estado de solicitud</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                    </thead>
+                    <div class="row g-3">
 
-                    <tbody>
-                    <tr th:each="vendedor : ${vendedores}">
-                        <td th:text="${vendedor.id}"></td>
+                        <div class="col-12 col-md-5">
+                            <label for="buscarVendedor" class="form-label fw-semibold">
+                                Nombre o apellido
+                            </label>
+                            <input type="text"
+                                   id="buscarVendedor"
+                                   class="form-control"
+                                   placeholder="Escribe un nombre o apellido...">
+                        </div>
 
-                        <td>
-                            <span th:text="${vendedor.nombre}"></span>
-                            <span th:text="${vendedor.apellido}"></span>
-                        </td>
+                        <div class="col-12 col-md-3">
+                            <label for="filtroBloque" class="form-label fw-semibold">
+                                Bloque asignado
+                            </label>
+                            <select id="filtroBloque" class="form-select">
+                                <option value="todos">Todos los bloques</option>
+                            </select>
+                        </div>
 
-                        <td th:text="${vendedor.username}"></td>
-                        <td th:text="${vendedor.telefono}"></td>
-                        <td th:text="${vendedor.nombreBloque}"></td>
+                        <div class="col-12 col-md-2">
+                            <label for="filtroEstado" class="form-label fw-semibold">
+                                Estado
+                            </label>
+                            <select id="filtroEstado" class="form-select">
+                                <option value="todos">Todos</option>
+                                <option value="activo">Activos</option>
+                                <option value="inactivo">Inactivos</option>
+                            </select>
+                        </div>
 
-                        <td>
-                            <span class="badge bg-info text-dark"
-                                  th:text="${vendedor.estadoSolicitud}">
-                            </span>
-                        </td>
+                        <div class="col-12 col-md-2 d-flex align-items-end">
+                            <button type="button"
+                                    id="limpiarFiltros"
+                                    class="btn btn-outline-secondary w-100">
+                                Limpiar filtros
+                            </button>
+                        </div>
 
-                        <td>
-                            <span th:if="${vendedor.activo}"
-                                  class="badge bg-success">
-                                Activo
-                            </span>
+                    </div>
+                </div>
 
-                            <span th:unless="${vendedor.activo}"
-                                  class="badge bg-danger">
-                                Inactivo
-                            </span>
-                        </td>
+                <!-- Sin resultados -->
+                <div id="sinResultados"
+                     class="alert alert-warning d-none"
+                     role="status">
+                    No se encontraron vendedores con los filtros seleccionados.
+                </div>
 
-                        <td>
-                            <div class="d-flex flex-column gap-2">
+                <!-- Tabla -->
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle mb-0"
+                           id="tablaVendedores">
 
-                                <button type="button"
-                                        class="btn btn-sm btn-primary"
-                                        data-bs-toggle="modal"
-                                        th:attr="data-bs-target='#modalEditar' + ${vendedor.id}">
-                                    Editar
-                                </button>
+                        <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Usuario</th>
+                            <th>Teléfono</th>
+                            <th>Bloque asignado</th>
+                            <th>Solicitud</th>
+                            <th>Estado</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                        </thead>
 
-                                <form th:if="${vendedor.activo}"
-                                      th:action="@{/admin/usuarios/{id}/estado(id=${vendedor.id})}"
-                                      method="post"
-                                      onsubmit="return confirm('¿Estás seguro de desactivar este vendedor?');">
+                        <tbody>
+                        <tr th:each="vendedor : ${vendedores}"
+                            th:attr="data-nombre=${#strings.toLowerCase(vendedor.nombre + ' ' + vendedor.apellido)},
+                                     data-bloque=${vendedor.nombreBloque != null ? vendedor.nombreBloque : 'Sin bloque'},
+                                     data-estado=${vendedor.activo ? 'activo' : 'inactivo'}">
 
-                                    <input type="hidden" name="activar" value="false">
+                            <td>
+                                <div class="fw-semibold">
+                                    <span th:text="${vendedor.nombre}"></span>
+                                    <span th:text="${vendedor.apellido}"></span>
+                                </div>
+                            </td>
 
-                                    <button type="submit" class="btn btn-sm btn-danger">
-                                        Desactivar
+                            <td>
+                                <span class="text-body" th:text="${vendedor.username}"></span>
+                            </td>
+
+                            <td th:text="${vendedor.telefono}"></td>
+
+                            <td>
+                                <span th:text="${vendedor.nombreBloque != null ? vendedor.nombreBloque : 'Sin bloque'}"></span>
+                            </td>
+
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${vendedor.estadoSolicitud == 'ACEPTADA'
+                                          or vendedor.estadoSolicitud == 'APROBADA'} ? ' text-bg-success' :
+                                          (${vendedor.estadoSolicitud == 'RECHAZADA'} ? ' text-bg-danger' :
+                                          (${vendedor.estadoSolicitud == 'PENDIENTE'} ? ' text-bg-warning' : ' text-bg-primary'))"
+                                      th:text="${vendedor.estadoSolicitud}">
+                                </span>
+                            </td>
+
+                            <td>
+                                <span th:if="${vendedor.activo}"
+                                      class="badge text-bg-success">
+                                    Activo
+                                </span>
+
+                                <span th:unless="${vendedor.activo}"
+                                      class="badge text-bg-danger">
+                                    Inactivo
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
+
+                                    <button type="button"
+                                            class="btn btn-sm btn-primary"
+                                            data-bs-toggle="modal"
+                                            th:attr="data-bs-target='#modalEditar' + ${vendedor.id}">
+                                        Editar
                                     </button>
-                                </form>
 
-                                <form th:unless="${vendedor.activo}"
-                                      th:action="@{/admin/usuarios/{id}/estado(id=${vendedor.id})}"
-                                      method="post"
-                                      onsubmit="return confirm('¿Estás seguro de activar este vendedor?');">
+                                    <form th:if="${vendedor.activo}"
+                                          th:action="@{/admin/usuarios/{id}/estado(id=${vendedor.id})}"
+                                          method="post"
+                                          onsubmit="return confirm('¿Estás seguro de desactivar este vendedor?');">
 
-                                    <input type="hidden" name="activar" value="true">
+                                        <input type="hidden" name="activar" value="false">
 
-                                    <button type="submit" class="btn btn-sm btn-success">
-                                        Activar
-                                    </button>
-                                </form>
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-danger w-100">
+                                            Desactivar
+                                        </button>
+                                    </form>
 
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
+                                    <form th:unless="${vendedor.activo}"
+                                          th:action="@{/admin/usuarios/{id}/estado(id=${vendedor.id})}"
+                                          method="post"
+                                          onsubmit="return confirm('¿Estás seguro de activar este vendedor?');">
 
-                </table>
+                                        <input type="hidden" name="activar" value="true">
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-success w-100">
+                                            Activar
+                                        </button>
+                                    </form>
+
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+
             </div>
         </div>
     </div>
 
     <!-- Ventanas para editar vendedores -->
     <div th:each="vendedor : ${vendedores}">
+
         <div class="modal fade"
              th:id="'modalEditar' + ${vendedor.id}"
              tabindex="-1"
              aria-hidden="true">
 
             <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
+                <div class="modal-content border-0 shadow">
 
                     <form th:action="@{/admin/usuarios/{id}/editar(id=${vendedor.id})}"
                           method="post">
 
                         <div class="modal-header">
-                            <h5 class="modal-title">
-                                Editar vendedor
-                            </h5>
+                            <div>
+                                <h5 class="modal-title fw-bold">
+                                    Editar vendedor
+                                </h5>
+                                <small class="text-muted">
+                                    Actualiza sus datos personales y de contacto.
+                                </small>
+                            </div>
+
                             <button type="button"
                                     class="btn-close"
-                                    data-bs-dismiss="modal"></button>
+                                    data-bs-dismiss="modal"
+                                    aria-label="Cerrar"></button>
                         </div>
 
-                        <div class="modal-body">
+                        <div class="modal-body p-4">
 
                             <div class="mb-3">
-                                <label class="form-label">Nombre</label>
+                                <label class="form-label fw-semibold">
+                                    Nombre
+                                </label>
                                 <input type="text"
                                        name="nombre"
                                        class="form-control"
@@ -182,7 +301,9 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Apellido</label>
+                                <label class="form-label fw-semibold">
+                                    Apellido
+                                </label>
                                 <input type="text"
                                        name="apellido"
                                        class="form-control"
@@ -192,7 +313,9 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Teléfono</label>
+                                <label class="form-label fw-semibold">
+                                    Teléfono
+                                </label>
                                 <input type="text"
                                        name="telefono"
                                        class="form-control"
@@ -201,10 +324,12 @@
                                        required>
                             </div>
 
-                            <hr>
+                            <hr class="my-4">
 
                             <div class="mb-3">
-                                <label class="form-label">Nombre de usuario</label>
+                                <label class="form-label fw-semibold">
+                                    Nombre de usuario
+                                </label>
                                 <input type="text"
                                        class="form-control"
                                        th:value="${vendedor.username}"
@@ -214,11 +339,13 @@
                                 </div>
                             </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Bloque asignado</label>
+                            <div class="mb-0">
+                                <label class="form-label fw-semibold">
+                                    Bloque asignado
+                                </label>
                                 <input type="text"
                                        class="form-control"
-                                       th:value="${vendedor.nombreBloque}"
+                                       th:value="${vendedor.nombreBloque != null ? vendedor.nombreBloque : 'Sin bloque'}"
                                        disabled>
                                 <div class="form-text">
                                     El bloque asignado no se puede modificar.
@@ -227,9 +354,9 @@
 
                         </div>
 
-                        <div class="modal-footer">
+                        <div class="modal-footer bg-light">
                             <button type="button"
-                                    class="btn btn-secondary"
+                                    class="btn btn-outline-secondary"
                                     data-bs-dismiss="modal">
                                 Cancelar
                             </button>
@@ -247,6 +374,84 @@
     </div>
 
 </main>
+
+<script>
+    const buscarVendedor = document.getElementById('buscarVendedor');
+    const filtroBloque = document.getElementById('filtroBloque');
+    const filtroEstado = document.getElementById('filtroEstado');
+    const limpiarFiltros = document.getElementById('limpiarFiltros');
+    const tablaVendedores = document.getElementById('tablaVendedores');
+    const sinResultados = document.getElementById('sinResultados');
+
+    if (tablaVendedores) {
+
+        const filas = tablaVendedores.querySelectorAll('tbody tr');
+        const bloques = new Set();
+
+        // Obtener los bloques existentes sin repetirlos.
+        filas.forEach(fila => {
+            const bloque = fila.dataset.bloque;
+
+            if (bloque) {
+                bloques.add(bloque);
+            }
+        });
+
+        [...bloques]
+            .sort((a, b) => a.localeCompare(b, 'es'))
+            .forEach(bloque => {
+                const opcion = document.createElement('option');
+                opcion.value = bloque;
+                opcion.textContent = bloque;
+                filtroBloque.appendChild(opcion);
+            });
+
+        function filtrarVendedores() {
+
+            const texto = buscarVendedor.value.trim().toLowerCase();
+            const bloque = filtroBloque.value;
+            const estado = filtroEstado.value;
+
+            let encontrados = 0;
+
+            filas.forEach(fila => {
+
+                const nombre = fila.dataset.nombre || '';
+                const bloqueVendedor = fila.dataset.bloque;
+                const estadoVendedor = fila.dataset.estado;
+
+                const coincideNombre = nombre.includes(texto);
+                const coincideBloque =
+                    bloque === 'todos' || bloque === bloqueVendedor;
+                const coincideEstado =
+                    estado === 'todos' || estado === estadoVendedor;
+
+                const mostrar =
+                    coincideNombre && coincideBloque && coincideEstado;
+
+                fila.style.display = mostrar ? '' : 'none';
+
+                if (mostrar) {
+                    encontrados++;
+                }
+            });
+
+            sinResultados.classList.toggle('d-none', encontrados > 0);
+        }
+
+        buscarVendedor.addEventListener('input', filtrarVendedores);
+        filtroBloque.addEventListener('change', filtrarVendedores);
+        filtroEstado.addEventListener('change', filtrarVendedores);
+
+        limpiarFiltros.addEventListener('click', () => {
+            buscarVendedor.value = '';
+            filtroBloque.value = 'todos';
+            filtroEstado.value = 'todos';
+
+            filtrarVendedores();
+        });
+    }
+</script>
 
 <script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
 

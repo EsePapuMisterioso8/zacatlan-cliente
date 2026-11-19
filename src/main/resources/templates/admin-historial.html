@@ -1,90 +1,384 @@
 
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
-    <title>Bitácora de movimientos - Zacatlán</title>
-    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
-</head>
-<body class="bg-light">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<nav class="navbar navbar-dark bg-success">
+    <title>Bitácora de movimientos | Zacatlán</title>
+
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap/css/zacatlan-theme.css}">
+</head>
+
+<body>
+
+<!-- Navegación -->
+<nav class="navbar navbar-dark shadow-sm">
     <div class="container">
-        <a class="navbar-brand" th:href="@{/admin}">Zacatlán</a>
-        <a class="btn btn-outline-light" th:href="@{/logout}">Cerrar sesión</a>
+
+        <a class="navbar-brand" th:href="@{/admin}">
+            Zacatlán
+        </a>
+
+        <div class="d-flex align-items-center gap-2">
+
+            <span class="navbar-text d-none d-sm-inline">
+                Bitácora administrativa
+            </span>
+
+            <a class="btn btn-outline-light" th:href="@{/logout}">
+                Cerrar sesión
+            </a>
+
+        </div>
+
     </div>
 </nav>
 
-<div class="container mt-4">
+<main class="container py-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- Encabezado -->
+    <section class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+
         <div>
-            <h2>Bitácora de movimientos</h2>
+            <h2 class="mb-2">Bitácora de movimientos</h2>
+
             <p class="text-muted mb-0">
-                Consulta las acciones realizadas por los administradores.
+                Consulta y filtra las acciones realizadas por los administradores.
+                Revisa los cambios registrados en el sistema.
             </p>
         </div>
-        <a th:href="@{/admin}" class="btn btn-secondary">
+
+        <a th:href="@{/admin}" class="btn btn-outline-secondary">
             Volver al panel
         </a>
-    </div>
 
-    <div class="card shadow-sm">
-        <div class="card-header bg-white">
-            <strong>Movimientos registrados</strong>
-            <span class="badge bg-success ms-2"
-                  th:text="${#lists.size(historial)}">0</span>
+    </section>
+
+    <!-- Filtros -->
+    <section class="card mb-4">
+
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+
+            <div>
+                <h5 class="mb-0">Filtros de búsqueda</h5>
+                <small class="text-muted">
+                    Utiliza los campos para localizar movimientos específicos.
+                </small>
+            </div>
+
+            <span class="badge text-bg-primary">
+                Búsqueda avanzada
+            </span>
+
         </div>
 
         <div class="card-body">
 
-            <div th:if="${#lists.isEmpty(historial)}"
-                 class="alert alert-info">
-                No hay movimientos registrados.
+            <form method="get" th:action="@{/admin/historial}">
+
+                <div class="row g-3">
+
+                    <div class="col-12 col-md-6">
+
+                        <label class="form-label" for="administrador">
+                            Administrador
+                        </label>
+
+                        <select id="administrador"
+                                name="administrador"
+                                class="form-select">
+
+                            <option value="">Todos los administradores</option>
+
+                            <option th:each="nombre : ${administradores}"
+                                    th:value="${nombre}"
+                                    th:text="${nombre}"
+                                    th:selected="${nombre == administradorSeleccionado}">
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-12 col-md-3">
+
+                        <label class="form-label" for="accion">
+                            Acción
+                        </label>
+
+                        <select id="accion"
+                                name="accion"
+                                class="form-select">
+
+                            <option value="">Todas las acciones</option>
+
+                            <option th:each="tipo : ${acciones}"
+                                    th:value="${tipo}"
+                                    th:text="${tipo}"
+                                    th:selected="${tipo == accionSeleccionada}">
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-12 col-md-3">
+
+                        <label class="form-label" for="entidad">
+                            Entidad
+                        </label>
+
+                        <select id="entidad"
+                                name="entidad"
+                                class="form-select">
+
+                            <option value="">Todas las entidades</option>
+
+                            <option th:each="tipo : ${entidades}"
+                                    th:value="${tipo}"
+                                    th:text="${tipo}"
+                                    th:selected="${tipo == entidadSeleccionada}">
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-12 col-md-6">
+
+                        <label class="form-label" for="fechaInicio">
+                            Fecha inicial
+                        </label>
+
+                        <input type="date"
+                               id="fechaInicio"
+                               name="fechaInicio"
+                               class="form-control"
+                               th:value="${fechaInicio}">
+
+                    </div>
+
+                    <div class="col-12 col-md-6">
+
+                        <label class="form-label" for="fechaFin">
+                            Fecha final
+                        </label>
+
+                        <input type="date"
+                               id="fechaFin"
+                               name="fechaFin"
+                               class="form-control"
+                               th:value="${fechaFin}">
+
+                    </div>
+
+                    <div class="col-12">
+
+                        <label class="form-label" for="buscar">
+                            Buscar por texto
+                        </label>
+
+                        <input type="text"
+                               id="buscar"
+                               name="buscar"
+                               class="form-control"
+                               placeholder="Descripción, administrador o datos del movimiento..."
+                               th:value="${buscar}">
+
+                    </div>
+
+                </div>
+
+                <div class="d-flex flex-wrap gap-2 mt-4">
+
+                    <button type="submit" class="btn btn-primary px-4">
+                        Aplicar filtros
+                    </button>
+
+                    <a th:href="@{/admin/historial}"
+                       class="btn btn-outline-secondary">
+                        Limpiar filtros
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+    </section>
+
+    <!-- Mensajes -->
+    <div th:if="${error}"
+         class="alert alert-danger alert-dismissible fade show"
+         role="alert">
+
+        <span th:text="${error}"></span>
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Cerrar">
+        </button>
+
+    </div>
+
+    <!-- Resultados -->
+    <section class="card">
+
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+
+            <div>
+                <h5 class="mb-0">Movimientos registrados</h5>
+
+                <small class="text-muted">
+                    Detalle de las operaciones realizadas en el sistema.
+                </small>
             </div>
 
+            <span class="badge text-bg-primary"
+                  th:text="${#lists.size(historial)} + ' movimientos'">
+                0 movimientos
+            </span>
+
+        </div>
+
+        <div class="card-body">
+
+            <!-- Sin resultados -->
+            <div th:if="${#lists.isEmpty(historial)}"
+                 class="alert alert-info mb-0">
+
+                No se encontraron movimientos con los filtros seleccionados.
+
+            </div>
+
+            <!-- Tabla de resultados -->
             <div th:unless="${#lists.isEmpty(historial)}"
                  class="table-responsive">
 
-                <table class="table table-striped table-hover align-middle">
-                    <thead class="table-success">
+                <table class="table table-hover align-middle">
+
+                    <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Fecha y hora</th>
-                        <th>Administrador</th>
-                        <th>Acción</th>
-                        <th>Entidad</th>
-                        <th>ID registro</th>
-                        <th>Descripción</th>
-                        <th>Datos anteriores</th>
-                        <th>Datos nuevos</th>
+                        <th style="min-width: 155px;">Fecha y hora</th>
+                        <th style="min-width: 150px;">Administrador</th>
+                        <th style="min-width: 130px;">Acción</th>
+                        <th style="min-width: 120px;">Entidad</th>
+                        <th style="min-width: 250px;">Descripción</th>
+                        <th style="min-width: 220px;">Datos anteriores</th>
+                        <th style="min-width: 220px;">Datos nuevos</th>
                     </tr>
                     </thead>
 
                     <tbody>
+
                     <tr th:each="movimiento : ${historial}">
-                        <td th:text="${movimiento.idMovimiento}"></td>
-                        <td th:text="${#temporals.format(movimiento.fechaHora, 'dd/MM/yyyy HH:mm:ss')}"></td>
-                        <td th:text="${movimiento.administrador}"></td>
+
+                        <!-- Fecha -->
                         <td>
-                            <span class="badge bg-primary"
-                                  th:text="${movimiento.accion}"></span>
+
+                            <span class="fw-semibold"
+                                  th:text="${movimiento.fechaHora != null
+                                    ? #temporals.format(movimiento.fechaHora, 'dd/MM/yyyy')
+                                    : 'Sin fecha'}">
+                            </span>
+
+                            <br>
+
+                            <small class="text-muted"
+                                   th:text="${movimiento.fechaHora != null
+                                    ? #temporals.format(movimiento.fechaHora, 'HH:mm:ss')
+                                    : ''}">
+                            </small>
+
                         </td>
-                        <td th:text="${movimiento.entidad}"></td>
-                        <td th:text="${movimiento.idRegistro}"></td>
-                        <td th:text="${movimiento.descripcion}"></td>
-                        <td th:text="${movimiento.datosAnteriores != null ? movimiento.datosAnteriores : 'Sin datos'}"></td>
-                        <td th:text="${movimiento.datosNuevos != null ? movimiento.datosNuevos : 'Sin datos'}"></td>
+
+                        <!-- Administrador -->
+                        <td>
+
+                            <span class="fw-semibold"
+                                  th:text="${movimiento.administrador}">
+                            </span>
+
+                        </td>
+
+                        <!-- Acción con colores según el resultado -->
+                        <td>
+
+                            <span class="badge"
+                                  th:classappend="${movimiento.accion == 'APROBACION'
+                                      or movimiento.accion == 'AUTORIZACION'
+                                      or movimiento.accion == 'ACTIVACION'} ? ' text-bg-success' :
+                                      (${movimiento.accion == 'RECHAZO'
+                                      or movimiento.accion == 'DESACTIVACION'} ? ' text-bg-danger' :
+                                      (${movimiento.accion == 'PENDIENTE'} ? ' text-bg-warning' : ' text-bg-primary'))"
+                                  th:text="${movimiento.accion}">
+                            </span>
+
+                        </td>
+
+                        <!-- Entidad -->
+                        <td>
+
+                            <span class="badge text-bg-light border"
+                                  th:text="${movimiento.entidad}">
+                            </span>
+
+                        </td>
+
+                        <!-- Descripción -->
+                        <td>
+
+                            <span th:text="${movimiento.descripcion}"></span>
+
+                        </td>
+
+                        <!-- Datos anteriores -->
+                        <td>
+
+                            <span class="text-muted"
+                                  th:text="${movimiento.datosAnteriores != null
+                                    ? movimiento.datosAnteriores
+                                    : 'Sin datos'}">
+                            </span>
+
+                        </td>
+
+                        <!-- Datos nuevos -->
+                        <td>
+
+                            <span class="text-muted"
+                                  th:text="${movimiento.datosNuevos != null
+                                    ? movimiento.datosNuevos
+                                    : 'Sin datos'}">
+                            </span>
+
+                        </td>
+
                     </tr>
+
                     </tbody>
+
                 </table>
 
             </div>
-        </div>
-    </div>
 
-</div>
+        </div>
+    </section>
+
+    <!-- Pie -->
+    <footer class="text-center mt-4">
+        <small class="text-muted">
+            Zacatlán | Registro de movimientos administrativos
+        </small>
+    </footer>
+
+</main>
+
+<script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
 
 </body>
 </html>
-

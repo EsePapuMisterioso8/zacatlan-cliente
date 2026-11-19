@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -7,174 +8,221 @@
     <title>Panel del vendedor | Zacatlán</title>
 
     <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap/css/zacatlan-theme.css}">
 </head>
 
 <body class="bg-light">
 
-<nav class="navbar navbar-dark bg-dark shadow-sm">
+<nav class="navbar navbar-dark shadow-sm" style="background-color: #172b4d;">
     <div class="container">
-
         <a class="navbar-brand fw-bold" th:href="@{/vendedor}">
             Zacatlán
         </a>
 
-        <span class="navbar-text text-white">
+        <span class="navbar-text text-white d-none d-sm-inline">
             Panel del vendedor
         </span>
 
-        <a th:href="@{/logout}" class="btn btn-outline-light">
+        <a th:href="@{/logout}" class="btn btn-outline-light btn-sm">
             Cerrar sesión
         </a>
-
     </div>
 </nav>
 
-<main class="container py-5">
+<main class="container py-4 py-md-5">
 
-    <div class="mb-4">
-        <h2 class="fw-bold">
-            Bienvenido,
-            <span th:text="${session.usuarioLogueado}"></span>
-        </h2>
 
-        <p class="text-muted">
-            Desde aquí puedes administrar tus actividades como vendedor.
-        </p>
-    </div>
+    <!-- Bienvenida -->
+    <section class="mb-4">
+        <div class="p-4 p-md-5 rounded-4 shadow-sm"
+             style="background: linear-gradient(120deg, #172b4d, #2457a7); color: #ffffff !important;">
 
-    <!-- Información de la cuenta -->
-    <div class="card border-0 shadow-sm mb-4">
+        <span class="badge mb-3"
+              style="background-color: #ffffff !important; color: #2457a7 !important;">
+            Área de vendedor
+        </span>
 
-        <div class="card-header bg-white py-3">
+            <h2 class="fw-bold mb-2"
+                style="color: #ffffff !important;">
+                ¡Bienvenido,
+                <span th:text="${session.usuarioLogueado}"
+                      style="color: #ffffff !important;"></span>!
+            </h2>
+
+            <p class="mb-0"
+               style="color: #ffffff !important; opacity: 1 !important;">
+                Administra tus productos, registra tus ventas y consulta
+                tus actividades desde este espacio.
+            </p>
+        </div>
+    </section>
+
+
+    <!-- Información de cuenta -->
+    <section class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header bg-white border-0 px-4 pt-4">
             <h5 class="fw-bold mb-0">Información de mi cuenta</h5>
+            <p class="text-muted small mb-0 mt-1">
+                Datos de acceso a tu cuenta de vendedor
+            </p>
         </div>
 
-        <div class="card-body">
-
+        <div class="card-body px-4 pb-4">
             <div class="row g-3">
-
                 <div class="col-md-6">
-                    <span class="text-muted small">Nombre de usuario</span>
-                    <p class="fw-semibold mb-0"
-                       th:text="${session.usuarioLogueado}"></p>
+                    <div class="p-3 rounded-3 h-100"
+                         style="background-color: #f3f5f9;">
+                        <span class="text-muted small d-block mb-1">
+                            Nombre de usuario
+                        </span>
+                        <span class="fw-semibold"
+                              th:text="${session.usuarioLogueado}"></span>
+                    </div>
                 </div>
 
                 <div class="col-md-6">
-                    <span class="text-muted small">Tipo de cuenta</span>
-                    <p class="fw-semibold mb-0">Vendedor</p>
+                    <div class="p-3 rounded-3 h-100"
+                         style="background-color: #f3f5f9;">
+                        <span class="text-muted small d-block mb-1">
+                            Tipo de cuenta
+                        </span>
+                        <span class="fw-semibold">Vendedor</span>
+                    </div>
                 </div>
-
             </div>
-
         </div>
-    </div>
+    </section>
 
     <!-- Actividades -->
-    <div class="card border-0 shadow-sm">
-
-        <div class="card-header bg-white py-3">
-            <h5 class="fw-bold mb-0">Mis actividades</h5>
+    <section>
+        <div class="d-flex flex-wrap justify-content-between align-items-end mb-3 gap-2">
+            <div>
+                <h4 class="fw-bold mb-1">Mis actividades</h4>
+                <p class="text-muted mb-0">
+                    Selecciona una opción para continuar.
+                </p>
+            </div>
         </div>
 
-        <div class="card-body">
+        <div class="row g-3">
 
-            <div class="row g-3">
-
-                <!-- Mis productos -->
-                <div class="col-md-4">
-                    <div class="card h-100 border">
-                        <div class="card-body">
-                            <h5 class="card-title">Mis productos</h5>
-
-                            <p class="card-text text-muted">
-                                Consulta los productos que ofreces y sus precios actuales.
-                            </p>
-
-                            <a th:href="@{/vendedor/productos}"
-                               class="btn btn-outline-primary">
-                                Ver mis productos
-                            </a>
+            <!-- Mis productos -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="rounded-3 d-flex align-items-center justify-content-center mb-3"
+                             style="width: 48px; height: 48px; background-color: #e8effb;">
+                            <span class="fs-4">📦</span>
                         </div>
+
+                        <h5 class="fw-bold">Mis productos</h5>
+                        <p class="text-muted flex-grow-1">
+                            Consulta los productos que ofreces y sus precios actuales.
+                        </p>
+
+                        <a th:href="@{/vendedor/productos}"
+                           class="btn btn-outline-primary w-100">
+                            Ver mis productos
+                        </a>
                     </div>
                 </div>
+            </div>
 
-                <!-- Catálogo -->
-                <div class="col-md-4">
-                    <div class="card h-100 border">
-                        <div class="card-body">
-                            <h5 class="card-title">Catálogo de productos</h5>
-
-                            <p class="card-text text-muted">
-                                Explora los productos disponibles y agrega los que deseas vender.
-                            </p>
-
-                            <a th:href="@{/vendedor/catalogo}"
-                               class="btn btn-primary">
-                                Explorar catálogo
-                            </a>
+            <!-- Catálogo -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="rounded-3 d-flex align-items-center justify-content-center mb-3"
+                             style="width: 48px; height: 48px; background-color: #e8effb;">
+                            <span class="fs-4">🛍️</span>
                         </div>
+
+                        <h5 class="fw-bold">Catálogo de productos</h5>
+                        <p class="text-muted flex-grow-1">
+                            Explora los productos disponibles y agrega los que deseas vender.
+                        </p>
+
+                        <a th:href="@{/vendedor/catalogo}"
+                           class="btn btn-primary w-100">
+                            Explorar catálogo
+                        </a>
                     </div>
                 </div>
+            </div>
 
-                <!-- Cambios de precio -->
-                <div class="col-md-4">
-                    <div class="card h-100 border">
-                        <div class="card-body">
-                            <h5 class="card-title">Cambios de precio</h5>
-
-                            <p class="card-text text-muted">
-                                Solicita autorización para modificar el precio
-                                de tus productos y consulta el estado de tus solicitudes.
-                            </p>
-
-                            <a th:href="@{/vendedor/solicitudes-precio}"
-                               class="btn btn-primary">
-                                Ver solicitudes
-                            </a>
+            <!-- Cambios de precio -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="rounded-3 d-flex align-items-center justify-content-center mb-3"
+                             style="width: 48px; height: 48px; background-color: #fff4dc;">
+                            <span class="fs-4">💲</span>
                         </div>
+
+                        <h5 class="fw-bold">Cambios de precio</h5>
+                        <p class="text-muted flex-grow-1">
+                            Solicita autorización para modificar precios y consulta
+                            el estado de tus solicitudes.
+                        </p>
+
+                        <a th:href="@{/vendedor/solicitudes-precio}"
+                           class="btn btn-primary w-100">
+                            Ver solicitudes
+                        </a>
                     </div>
                 </div>
+            </div>
 
-                <!-- Registrar venta -->
-                <div class="col-md-4">
-                    <div class="card h-100 border">
-                        <div class="card-body">
-                            <h5 class="card-title">Registrar venta</h5>
-
-                            <p class="card-text text-muted">
-                                Registra las ventas realizadas a tus clientes.
-                            </p>
-
-                            <a th:href="@{/vendedor/ventas/nueva}"
-                               class="btn btn-primary">
-                                Registrar venta
-                            </a>
+            <!-- Registrar venta -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="rounded-3 d-flex align-items-center justify-content-center mb-3"
+                             style="width: 48px; height: 48px; background-color: #e5f5ed;">
+                            <span class="fs-4">🧾</span>
                         </div>
+
+                        <h5 class="fw-bold">Registrar venta</h5>
+                        <p class="text-muted flex-grow-1">
+                            Registra las ventas que realizas a tus clientes.
+                        </p>
+
+                        <a th:href="@{/vendedor/ventas/nueva}"
+                           class="btn btn-primary w-100">
+                            Registrar venta
+                        </a>
                     </div>
                 </div>
+            </div>
 
-                <!-- Mis ventas -->
-                <div class="col-md-4">
-                    <div class="card h-100 border">
-                        <div class="card-body">
-                            <h5 class="card-title">Mis ventas</h5>
-
-                            <p class="card-text text-muted">
-                                Consulta el historial de tus ventas.
-                            </p>
-
-                            <a th:href="@{/vendedor/ventas}"
-                               class="btn btn-primary">
-                                Ver mis ventas
-                            </a>
+            <!-- Mis ventas -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="rounded-3 d-flex align-items-center justify-content-center mb-3"
+                             style="width: 48px; height: 48px; background-color: #e8effb;">
+                            <span class="fs-4">📊</span>
                         </div>
+
+                        <h5 class="fw-bold">Mis ventas</h5>
+                        <p class="text-muted flex-grow-1">
+                            Consulta el historial de las ventas que has realizado.
+                        </p>
+
+                        <a th:href="@{/vendedor/ventas}"
+                           class="btn btn-primary w-100">
+                            Ver mis ventas
+                        </a>
                     </div>
                 </div>
-
             </div>
 
         </div>
-    </div>
+    </section>
+
+    <footer class="text-center text-muted small mt-5">
+        Sistema de gestión de vendedores · Zacatlán
+    </footer>
 
 </main>
 

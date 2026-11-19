@@ -67,6 +67,17 @@ public class SolicitudPrecioClienteService {
         return solicitudes != null ? solicitudes : List.of();
     }
 
+    // Consultar todas las solicitudes
+    public List<SolicitudPrecioClienteDTO> listarTodasLasSolicitudes() {
+
+        List<SolicitudPrecioClienteDTO> solicitudes = restClient.get()
+                .uri("/api/solicitudes-precio/todas")
+                .retrieve()
+                .body(new ParameterizedTypeReference<List<SolicitudPrecioClienteDTO>>() {});
+
+        return solicitudes != null ? solicitudes : List.of();
+    }
+
     // Autorizar solicitud
     public void autorizarSolicitud(Long idSolicitud, String observacion) {
 

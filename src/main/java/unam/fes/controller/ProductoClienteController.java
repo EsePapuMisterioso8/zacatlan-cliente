@@ -102,6 +102,46 @@ public class ProductoClienteController {
         return "redirect:/admin/productos";
     }
 
+    @PostMapping("/editar/{id}")
+    public String actualizarProducto(
+            @PathVariable Long id,
+            @RequestParam String nombre,
+            @RequestParam(required = false) String descripcion,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        if (!"ADMINISTRADOR".equals(session.getAttribute("rol"))) {
+            return "redirect:/login";
+        }
+
+        try {
+            productoService.actualizarProducto(id, nombre, descripcion);
+
+            redirectAttributes.addFlashAttribute(
+                    "mensaje",
+                    "Producto actualizado exitosamente."
+            );
+
+        } catch (RestClientResponseException e) {
+            String mensaje = e.getResponseBodyAsString();
+
+            redirectAttributes.addFlashAttribute(
+                    "error",
+                    mensaje.isBlank()
+                            ? "No fue posible actualizar el producto."
+                            : mensaje
+            );
+
+        } catch (RestClientException e) {
+            redirectAttributes.addFlashAttribute(
+                    "error",
+                    "No fue posible comunicarse con la API REST."
+            );
+        }
+
+        return "redirect:/admin/productos";
+    }
+
     @PostMapping("/estado/{id}")
     public String cambiarEstado(
             @PathVariable Long id,

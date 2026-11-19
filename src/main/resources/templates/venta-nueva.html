@@ -4,100 +4,280 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Registrar venta - Zacatlán</title>
-    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
-</head>
-<body class="bg-light">
 
-<nav class="navbar navbar-dark bg-success">
-    <div class="container">
-        <a class="navbar-brand" th:href="@{/vendedor}">Zacatlán</a>
-        <a class="btn btn-outline-light btn-sm" th:href="@{/logout}">Cerrar sesión</a>
+    <title>Registrar venta | Zacatlán</title>
+
+    <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap/css/zacatlan-theme.css}">
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark shadow-sm" style="background-color: #172b4d;">
+    <div class="container position-relative">
+
+        <a class="navbar-brand fw-bold" th:href="@{/vendedor}">
+            Zacatlán
+        </a>
+
+        <span class="navbar-text text-white position-absolute start-50 translate-middle-x d-none d-sm-inline">
+            Registro de ventas
+        </span>
+
+        <a th:href="@{/logout}" class="btn btn-outline-light btn-sm">
+            Cerrar sesión
+        </a>
+
     </div>
 </nav>
 
-<div class="container mt-4">
+<main class="container py-4 py-md-5">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- Encabezado -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
-            <h2>Registrar venta</h2>
-            <p class="text-muted mb-0">Registra una venta de los productos de tu inventario.</p>
+            <span class="badge bg-primary mb-2">Área de vendedor</span>
+            <h2 class="fw-bold mb-1">Registrar venta</h2>
+            <p class="text-muted mb-0">
+                Registra una venta de los productos disponibles en tu inventario.
+            </p>
         </div>
-        <a th:href="@{/vendedor}" class="btn btn-secondary">Volver</a>
+
+        <a th:href="@{/vendedor}" class="btn btn-outline-secondary">
+            <span class="me-1">←</span> Volver al panel
+        </a>
     </div>
 
-    <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
-    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <!-- Mensajes -->
+    <div th:if="${mensaje}"
+         class="alert alert-success alert-dismissible fade show shadow-sm"
+         role="alert">
+        <span th:text="${mensaje}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"
+                aria-label="Cerrar"></button>
+    </div>
 
-    <div class="card shadow-sm">
-        <div class="card-header bg-white">
-            <h5 class="mb-0">Datos de la venta</h5>
-        </div>
+    <div th:if="${error}"
+         class="alert alert-danger alert-dismissible fade show shadow-sm"
+         role="alert">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"
+                aria-label="Cerrar"></button>
+    </div>
 
-        <div class="card-body">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-9 col-xl-8">
 
-            <form th:action="@{/vendedor/ventas/registrar}" method="post">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
 
-                <div class="mb-3">
-                    <label for="idProductoVendedor" class="form-label">Producto</label>
+                <!-- Encabezado de tarjeta -->
+                <div class="card-header border-0 px-4 py-4"
+                     style="background-color: #172b4d; color: #ffffff;">
 
-                    <select class="form-select"
-                            id="idProductoVendedor"
-                            name="idProductoVendedor"
-                            required>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-3 d-flex align-items-center justify-content-center"
+                             style="width: 48px; height: 48px; background-color: rgba(255,255,255,0.15);">
+                            <span class="fs-4">🧾</span>
+                        </div>
 
-                        <option value="">Selecciona un producto</option>
-
-                        <option th:each="producto : ${inventario}"
-                                th:if="${producto.activo}"
-                                th:value="${producto.idProductoVendedor}"
-                                th:text="${producto.nombreProducto + ' - $' + producto.precio}">
-                        </option>
-
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label for="cantidad" class="form-label">Cantidad</label>
-                    <input type="number"
-                           class="form-control"
-                           id="cantidad"
-                           name="cantidad"
-                           min="1"
-                           value="1"
-                           required>
-                </div>
-
-                <div class="mb-3">
-                    <label for="precioVenta" class="form-label">Precio de venta por unidad ($)</label>
-                    <input type="number"
-                           class="form-control"
-                           id="precioVenta"
-                           name="precioVenta"
-                           min="0.01"
-                           step="0.01"
-                           placeholder="Ej. 85.00"
-                           required>
-                    <div class="form-text">
-                        Ingresa el precio al que realizarás la venta por unidad.
+                        <div>
+                            <h5 class="fw-bold mb-1"
+                                style="color: #ffffff;">
+                                Datos de la venta
+                            </h5>
+                            <p class="small mb-0"
+                               style="color: #e2e8f0;">
+                                Completa los datos para registrar la operación.
+                            </p>
+                        </div>
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-success">
-                    Registrar venta
-                </button>
+                <div class="card-body p-4 p-md-5">
 
-                <a th:href="@{/vendedor}" class="btn btn-outline-secondary">
-                    Cancelar
-                </a>
+                    <form th:action="@{/vendedor/ventas/registrar}"
+                          method="post"
+                          id="formVenta">
 
-            </form>
+                        <!-- Producto -->
+                        <div class="mb-4">
+                            <label for="buscarProducto" class="form-label fw-semibold">
+                                Producto
+                            </label>
+
+                            <input type="text"
+                                   class="form-control form-control-lg"
+                                   id="buscarProducto"
+                                   placeholder="Escribe el nombre del producto..."
+                                   autocomplete="off">
+
+                            <input type="hidden"
+                                   id="idProductoVendedor"
+                                   name="idProductoVendedor"
+                                   required>
+
+                            <div id="sugerenciasProductos"
+                                 class="list-group mt-2 shadow-sm rounded-3"
+                                 style="display: none; max-height: 220px; overflow-y: auto;">
+
+                                <button type="button"
+                                        class="list-group-item list-group-item-action py-3"
+                                        th:each="producto : ${inventario}"
+                                        th:if="${producto.activo}"
+                                        th:attr="data-id=${producto.idProductoVendedor},
+                                                 data-nombre=${producto.nombreProducto},
+                                                 data-precio=${producto.precio}"
+                                        th:text="${producto.nombreProducto + ' - $' + producto.precio}">
+                                </button>
+                            </div>
+
+                            <div id="productoSeleccionado"
+                                 class="alert alert-success mt-3 mb-0 py-2"
+                                 style="display: none;">
+                            </div>
+
+                            <div class="form-text mt-2">
+                                Busca y selecciona un producto de tu inventario activo.
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+
+                            <!-- Cantidad -->
+                            <div class="col-md-6">
+                                <label for="cantidad" class="form-label fw-semibold">
+                                    Cantidad
+                                </label>
+
+                                <input type="number"
+                                       class="form-control form-control-lg"
+                                       id="cantidad"
+                                       name="cantidad"
+                                       min="1"
+                                       value="1"
+                                       required>
+
+                                <div class="form-text">
+                                    Número de unidades que se venderán.
+                                </div>
+                            </div>
+
+                            <!-- Precio -->
+                            <div class="col-md-6">
+                                <label for="precioVenta" class="form-label fw-semibold">
+                                    Precio por unidad ($)
+                                </label>
+
+                                <input type="number"
+                                       class="form-control form-control-lg"
+                                       id="precioVenta"
+                                       name="precioVenta"
+                                       min="0.01"
+                                       step="0.01"
+                                       placeholder="Ej. 85.00"
+                                       required>
+
+                                <div class="form-text">
+                                    Ingresa el precio al que realizarás la venta.
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Acciones -->
+                        <div class="d-flex flex-column flex-sm-row gap-2 justify-content-end">
+                            <a th:href="@{/vendedor}"
+                               class="btn btn-outline-secondary px-4">
+                                Cancelar
+                            </a>
+
+                            <button type="submit"
+                                    class="btn btn-primary px-4">
+                                Registrar venta
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+            <p class="text-muted text-center small mt-3">
+                Verifica el producto, la cantidad y el precio antes de registrar la venta.
+            </p>
 
         </div>
     </div>
 
-</div>
+</main>
+
+<script>
+    const buscarProducto = document.getElementById('buscarProducto');
+    const idProducto = document.getElementById('idProductoVendedor');
+    const sugerencias = document.getElementById('sugerenciasProductos');
+    const productoSeleccionado = document.getElementById('productoSeleccionado');
+    const formVenta = document.getElementById('formVenta');
+
+    const productos = Array.from(
+        sugerencias.querySelectorAll('button')
+    );
+
+    buscarProducto.addEventListener('input', function () {
+        const texto = this.value.trim().toLowerCase();
+
+        idProducto.value = '';
+        productoSeleccionado.style.display = 'none';
+
+        productos.forEach(function (producto) {
+            const nombre = producto.dataset.nombre.toLowerCase();
+            const coincide = texto !== '' && nombre.includes(texto);
+
+            producto.style.display = coincide ? '' : 'none';
+        });
+
+        const hayResultados = productos.some(function (producto) {
+            return producto.style.display !== 'none';
+        });
+
+        sugerencias.style.display =
+            texto !== '' && hayResultados ? 'block' : 'none';
+    });
+
+    productos.forEach(function (producto) {
+        producto.addEventListener('click', function () {
+            const id = this.dataset.id;
+            const nombre = this.dataset.nombre;
+            const precio = this.dataset.precio;
+
+            idProducto.value = id;
+            buscarProducto.value = nombre;
+
+            productoSeleccionado.textContent =
+                'Producto seleccionado: ' + nombre + ' - $' + precio;
+
+            productoSeleccionado.style.display = 'block';
+            sugerencias.style.display = 'none';
+        });
+    });
+
+    formVenta.addEventListener('submit', function (event) {
+        if (!idProducto.value) {
+            event.preventDefault();
+            alert('Debes buscar y seleccionar un producto de la lista.');
+            buscarProducto.focus();
+        }
+    });
+
+    document.addEventListener('click', function (event) {
+        if (!buscarProducto.contains(event.target) &&
+            !sugerencias.contains(event.target)) {
+            sugerencias.style.display = 'none';
+        }
+    });
+</script>
 
 <script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
 </body>
 </html>

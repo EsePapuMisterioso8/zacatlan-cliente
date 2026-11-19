@@ -1,8 +1,8 @@
-
 package unam.fes.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class VentaResponseDTO {
 
@@ -11,6 +11,7 @@ public class VentaResponseDTO {
     private LocalDateTime fechaHora;
     private BigDecimal total;
     private String metodoPago;
+    private List<String> nombresProductos;
 
     public Long getIdVenta() {
         return idVenta;
@@ -50,5 +51,13 @@ public class VentaResponseDTO {
 
     public void setMetodoPago(String metodoPago) {
         this.metodoPago = metodoPago;
+    }
+
+    public List<String> getNombresProductos() {
+        return nombresProductos;
+    }
+
+    public void setNombresProductos(List<String> nombresProductos) {
+        this.nombresProductos = nombresProductos;
     }
 }

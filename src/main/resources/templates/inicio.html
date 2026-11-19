@@ -1,6 +1,7 @@
 
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,34 +9,79 @@
     <title>Inicio | Zacatlán</title>
 
     <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap/css/zacatlan-theme.css}">
 </head>
 
-<body class="bg-light">
+<body>
 
-<nav class="navbar navbar-dark bg-dark shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
     <div class="container">
-        <a class="navbar-brand fw-bold" th:href="@{/}">
+        <a class="navbar-brand fw-bold fs-4" th:href="@{/}">
             Zacatlán
+        </a>
+
+        <a th:href="@{/login}"
+           class="btn btn-outline-light btn-sm">
+            Iniciar sesión
         </a>
     </div>
 </nav>
 
-<main class="container min-vh-100 d-flex align-items-center justify-content-center">
+<main class="container min-vh-100 d-flex align-items-center justify-content-center py-5">
 
     <div class="card border-0 shadow-sm text-center p-4 p-md-5"
-         style="max-width: 650px; width: 100%;">
+         style="max-width: 680px; width: 100%;">
 
-        <h1 class="fw-bold mb-3">Bienvenido a Zacatlán</h1>
+        <div class="mb-4">
+            <span class="badge bg-primary px-3 py-2">
+                Plataforma de gestión comercial
+            </span>
+        </div>
 
-        <p class="text-muted mb-4">
-            Sistema de administración de vendedores, productos y ventas.
-            Ingresa a tu cuenta o solicita tu registro como vendedor.
+        <h1 class="display-5 fw-bold mb-3">
+            Bienvenido a <span class="text-primary">Zacatlán</span>
+        </h1>
+
+        <p class="text-muted fs-5 mb-4">
+            Un espacio para administrar vendedores, productos y ventas
+            de manera sencilla y organizada.
         </p>
+
+        <div class="border rounded-3 p-3 p-md-4 mb-4 text-start">
+            <h5 class="fw-bold mb-3 text-center">
+                ¿Qué deseas hacer?
+            </h5>
+
+            <div class="d-flex align-items-start gap-3 mb-3">
+                <div class="text-primary fs-4">
+                    <span>01</span>
+                </div>
+                <div>
+                    <h6 class="fw-semibold mb-1">Acceder a mi cuenta</h6>
+                    <p class="text-muted small mb-0">
+                        Ingresa al sistema para consultar tus funciones
+                        y administrar tus actividades.
+                    </p>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-start gap-3">
+                <div class="text-primary fs-4">
+                    <span>02</span>
+                </div>
+                <div>
+                    <h6 class="fw-semibold mb-1">Convertirme en vendedor</h6>
+                    <p class="text-muted small mb-0">
+                        Solicita tu registro para formar parte de la plataforma.
+                    </p>
+                </div>
+            </div>
+        </div>
 
         <div class="d-grid gap-3">
 
             <a th:href="@{/login}"
-               class="btn btn-dark btn-lg">
+               class="btn btn-primary btn-lg">
                 Iniciar sesión
             </a>
 
@@ -45,6 +91,10 @@
             </a>
 
         </div>
+
+        <p class="text-muted small mt-4 mb-0">
+            Zacatlán · Sistema de administración de vendedores y ventas
+        </p>
 
     </div>
 

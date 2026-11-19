@@ -1,58 +1,137 @@
 
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Historial de ventas</title>
+    <title>Historial de ventas - Zacatlán</title>
+
     <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap/css/zacatlan-theme.css}">
 </head>
+
 <body>
 
-<nav class="navbar navbar-dark bg-dark">
-    <div class="container">
-        <a class="navbar-brand" th:href="@{/admin}">Zacatlán</a>
-        <a class="btn btn-outline-light" th:href="@{/admin}">Volver al panel</a>
+<nav class="navbar navbar-dark shadow-sm">
+    <div class="container position-relative">
+
+        <a class="navbar-brand fw-bold" th:href="@{/admin}">
+            Zacatlán
+        </a>
+
+        <span class="navbar-text text-white position-absolute start-50 translate-middle-x d-none d-sm-inline">
+            Historial de ventas
+        </span>
+
+        <a class="btn btn-outline-light btn-sm" th:href="@{/logout}">
+            Cerrar sesión
+        </a>
+
     </div>
 </nav>
 
-<div class="container mt-4">
+<main class="container py-4 py-lg-5">
 
-    <h2>Historial de ventas</h2>
-    <p class="text-muted">
-        Consulta las ventas realizadas por todos los vendedores.
-    </p>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
 
-    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-dark text-white">
-            Filtros de búsqueda
+        <div>
+            <h2 class="fw-bold mb-1">Historial de ventas</h2>
+            <p class="text-muted mb-0">
+                Consulta y revisa las ventas realizadas por todos los vendedores.
+            </p>
         </div>
 
-        <div class="card-body">
-            <form method="get" th:action="@{/admin/ventas}">
+        <a class="btn btn-outline-secondary" th:href="@{/admin}">
+            <span aria-hidden="true">←</span> Volver al panel
+        </a>
+
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger shadow-sm"
+         role="alert" th:text="${error}">
+    </div>
+
+    <!-- Filtros -->
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-dark text-white py-3">
+            <h5 class="mb-0 fw-semibold">
+                Filtros de búsqueda
+            </h5>
+        </div>
+
+        <div class="card-body p-3 p-md-4">
+
+            <!-- Buscar vendedor -->
+            <form method="get" th:action="@{/admin/ventas}" class="mb-4">
+
+                <label for="buscarVendedor" class="form-label fw-semibold">
+                    Buscar vendedor por nombre
+                </label>
+
+                <div class="input-group">
+                    <input type="text"
+                           class="form-control"
+                           id="buscarVendedor"
+                           name="buscarVendedor"
+                           placeholder="Escribe el nombre o apellido"
+                           th:value="${buscarVendedor}">
+
+                    <button type="submit" class="btn btn-outline-primary">
+                        Buscar vendedor
+                    </button>
+                </div>
+
+                <div class="form-text">
+                    Escribe el nombre y pulsa Buscar vendedor para mostrar las coincidencias.
+                </div>
+
+            </form>
+
+            <div th:if="${buscarVendedor != null and !#strings.isEmpty(buscarVendedor)}"
+                 class="alert alert-info py-2 mb-4">
+                Selecciona el vendedor encontrado en la lista de abajo.
+            </div>
+
+            <hr class="my-4">
+
+            <!-- Consultar ventas -->
+            <form method="get"
+                  th:action="@{/admin/ventas}"
+                  id="formFiltros">
+
+                <input type="hidden"
+                       name="buscarVendedor"
+                       th:value="${buscarVendedor}">
 
                 <div class="row g-3">
 
-                    <div class="col-md-6">
-                        <label for="fecha" class="form-label">
+                    <div class="col-12 col-md-6">
+                        <label for="fecha" class="form-label fw-semibold">
                             Buscar ventas de un día
                         </label>
+
                         <input type="date"
                                class="form-control"
                                id="fecha"
                                name="fecha"
                                th:value="${fecha}">
+
+                        <div class="form-text">
+                            Consulta las ventas realizadas en una fecha específica.
+                        </div>
                     </div>
 
-                    <div class="col-md-6">
-                        <label for="idVendedor" class="form-label">
-                            Vendedor
+                    <div class="col-12 col-md-6">
+                        <label for="idVendedor" class="form-label fw-semibold">
+                            Seleccionar vendedor
                         </label>
+
                         <select class="form-select"
                                 id="idVendedor"
                                 name="idVendedor">
+
                             <option value="">Todos los vendedores</option>
 
                             <option th:each="vendedor : ${vendedores}"
@@ -60,116 +139,163 @@
                                     th:text="${vendedor.nombre + ' ' + vendedor.apellido}"
                                     th:selected="${idVendedor != null and idVendedor == vendedor.id}">
                             </option>
+
                         </select>
                     </div>
 
-                    <div class="col-md-6">
-                        <label for="fechaInicio" class="form-label">
-                            Fecha inicial
-                        </label>
-                        <input type="date"
-                               class="form-control"
-                               id="fechaInicio"
-                               name="fechaInicio"
-                               th:value="${fechaInicio}">
+                    <div class="col-12">
+                        <div class="border rounded-3 p-3">
+
+                            <h6 class="fw-bold mb-3">
+                                Consulta por rango de fechas
+                            </h6>
+
+                            <div class="row g-3">
+
+                                <div class="col-12 col-md-6">
+                                    <label for="fechaInicio" class="form-label">
+                                        Fecha inicial
+                                    </label>
+
+                                    <input type="date"
+                                           class="form-control"
+                                           id="fechaInicio"
+                                           name="fechaInicio"
+                                           th:value="${fechaInicio}">
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label for="fechaFin" class="form-label">
+                                        Fecha final
+                                    </label>
+
+                                    <input type="date"
+                                           class="form-control"
+                                           id="fechaFin"
+                                           name="fechaFin"
+                                           th:value="${fechaFin}">
+                                </div>
+
+                            </div>
+
+                        </div>
                     </div>
 
-                    <div class="col-md-6">
-                        <label for="fechaFin" class="form-label">
-                            Fecha final
+                    <!-- Filtro por producto -->
+                    <div class="col-12">
+                        <label for="producto" class="form-label fw-semibold">
+                            Buscar por producto
                         </label>
-                        <input type="date"
+
+                        <input type="text"
                                class="form-control"
-                               id="fechaFin"
-                               name="fechaFin"
-                               th:value="${fechaFin}">
+                               id="producto"
+                               name="producto"
+                               placeholder="Escribe el nombre del producto"
+                               th:value="${producto}">
+
+                        <div class="form-text">
+                            Puedes escribir el nombre completo o solamente una parte.
+                        </div>
                     </div>
 
                 </div>
 
-                <div class="mt-3 d-flex gap-2 flex-wrap">
-                    <button type="submit" class="btn btn-primary">
+                <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
+
+                    <button type="submit" class="btn btn-primary px-4">
                         Aplicar filtros
                     </button>
 
                     <a th:href="@{/admin/ventas}"
-                       class="btn btn-secondary">
+                       class="btn btn-outline-secondary px-4">
                         Mostrar todas
                     </a>
+
                 </div>
 
-                <div class="form-text mt-2">
-                    Puedes combinar un vendedor con un rango de fechas.
-                    Para buscar por un día específico, utiliza únicamente
-                    el campo de fecha correspondiente.
+                <div class="form-text mt-3">
+                    Puedes consultar por un solo día, por un rango de fechas
+                    o por vendedor. También puedes combinar un vendedor con un rango
+                    y utilizar el filtro de producto junto con cualquiera de ellos.
                 </div>
 
             </form>
+
         </div>
     </div>
 
-    <!-- Descargar reporte PDF -->
-    <div class="card shadow-sm mb-4" th:if="${fecha != null}">
-        <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-3">
-            <div>
-                <h5 class="mb-1">Reporte diario de ventas</h5>
-                <p class="text-muted mb-0">
-                    Genera el PDF con las ventas del día seleccionado.
-                </p>
-            </div>
+    <!-- Tabla de ventas -->
+    <div class="card shadow-sm border-0 mt-4">
 
-            <a class="btn btn-danger"
-               th:href="@{/admin/ventas/reporte/pdf(fecha=${fecha})}">
-                Descargar reporte PDF
-            </a>
+        <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0">
+                Registro de ventas
+            </h5>
+            <small class="text-muted">
+                Resultados de acuerdo con los filtros seleccionados.
+            </small>
         </div>
-    </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
+        <div class="card-body p-0">
 
             <div class="table-responsive">
-                <table class="table table-striped table-hover align-middle">
+                <table class="table table-hover align-middle mb-0">
 
                     <thead class="table-dark">
                     <tr>
-                        <th>ID</th>
-                        <th>Vendedor</th>
-                        <th>Fecha y hora</th>
-                        <th>Total</th>
-                        <th>Método de pago</th>
-                        <th>Detalle</th>
+                        <th class="px-3 py-3">Vendedor</th>
+                        <th class="py-3">Fecha y hora</th>
+                        <th class="py-3">Total</th>
+                        <th class="py-3">Método de pago</th>
+                        <th class="text-center py-3">Detalle</th>
                     </tr>
                     </thead>
 
                     <tbody>
+
                     <tr th:each="venta : ${ventas}">
-                        <td th:text="${venta.idVenta}"></td>
 
-                        <td th:text="${venta.nombreVendedor}"></td>
+                        <td class="px-3 fw-semibold"
+                            th:text="${venta.nombreVendedor}">
+                        </td>
 
-                        <td th:text="${#strings.substring(venta.fechaHora, 8, 10)
-                            + '/' + #strings.substring(venta.fechaHora, 5, 7)
-                            + '/' + #strings.substring(venta.fechaHora, 0, 4)
-                            + ' ' + #strings.substring(venta.fechaHora, 11, 16)}"></td>
+                        <td>
+                            <span th:text="${#strings.substring(venta.fechaHora, 8, 10)
+                                + '/' + #strings.substring(venta.fechaHora, 5, 7)
+                                + '/' + #strings.substring(venta.fechaHora, 0, 4)
+                                + ' ' + #strings.substring(venta.fechaHora, 11, 16)}">
+                            </span>
+                        </td>
 
-                        <td th:text="${'$' + #numbers.formatDecimal(venta.total, 1, 2)}"></td>
+                        <td>
+                            <span class="fw-bold text-success"
+                                  th:text="${'$' + #numbers.formatDecimal(venta.total, 1, 2)}">
+                            </span>
+                        </td>
 
                         <td th:text="${venta.metodoPago}"></td>
 
-                        <td>
+                        <td class="text-center">
                             <a class="btn btn-sm btn-primary"
                                th:href="@{/admin/ventas/{id}(id=${venta.idVenta})}">
                                 Ver detalle
                             </a>
                         </td>
+
                     </tr>
 
                     <tr th:if="${#lists.isEmpty(ventas)}">
-                        <td colspan="6" class="text-center text-muted">
-                            No hay ventas registradas.
+                        <td colspan="5" class="text-center py-5">
+                            <div class="text-muted">
+                                <h6 class="fw-semibold">No hay ventas registradas</h6>
+                                <p class="mb-0">
+                                    No se encontraron resultados para la consulta.
+                                </p>
+                            </div>
                         </td>
                     </tr>
+
                     </tbody>
 
                 </table>
@@ -178,8 +304,93 @@
         </div>
     </div>
 
-</div>
+</main>
 
 <script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const hoy = new Date();
+
+        const fechaActual = [
+            hoy.getFullYear(),
+            String(hoy.getMonth() + 1).padStart(2, "0"),
+            String(hoy.getDate()).padStart(2, "0")
+        ].join("-");
+
+        const fecha = document.getElementById("fecha");
+        const fechaInicio = document.getElementById("fechaInicio");
+        const fechaFin = document.getElementById("fechaFin");
+        const formulario = document.getElementById("formFiltros");
+
+        // Bloquear fechas futuras.
+        fecha.max = fechaActual;
+        fechaInicio.max = fechaActual;
+        fechaFin.max = fechaActual;
+
+        function actualizarCampos() {
+
+            const usaDia = fecha.value !== "";
+            const usaRango = fechaInicio.value !== "" || fechaFin.value !== "";
+
+            // Si se selecciona un día, bloquear el rango.
+            fechaInicio.disabled = usaDia;
+            fechaFin.disabled = usaDia;
+
+            // Si se empieza a llenar el rango, bloquear el día.
+            fecha.disabled = usaRango;
+
+            // Evitar que la fecha final sea anterior a la inicial.
+            fechaFin.min = fechaInicio.value || "";
+        }
+
+        fecha.addEventListener("change", actualizarCampos);
+        fechaInicio.addEventListener("change", actualizarCampos);
+        fechaFin.addEventListener("change", actualizarCampos);
+
+        // Aplicar el bloqueo también al cargar la página.
+        actualizarCampos();
+
+        formulario.addEventListener("submit", function (event) {
+
+            const usaDia = fecha.value !== "";
+            const usaRango = fechaInicio.value !== "" || fechaFin.value !== "";
+
+            if (usaDia && usaRango) {
+                event.preventDefault();
+                alert("Utiliza una sola fecha o un rango, no ambos.");
+                return;
+            }
+
+            if (usaDia && fecha.value > fechaActual) {
+                event.preventDefault();
+                alert("No puedes consultar fechas futuras.");
+                return;
+            }
+
+            if (usaRango) {
+
+                if (!fechaInicio.value || !fechaFin.value) {
+                    event.preventDefault();
+                    alert("Debes indicar la fecha inicial y la fecha final.");
+                    return;
+                }
+
+                if (fechaInicio.value > fechaFin.value) {
+                    event.preventDefault();
+                    alert("La fecha inicial no puede ser posterior a la fecha final.");
+                    return;
+                }
+
+                if (fechaInicio.value > fechaActual || fechaFin.value > fechaActual) {
+                    event.preventDefault();
+                    alert("No puedes consultar fechas futuras.");
+                }
+            }
+        });
+    });
+</script>
+
 </body>
 </html>

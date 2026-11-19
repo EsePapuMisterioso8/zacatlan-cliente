@@ -29,6 +29,24 @@ public class VendedorClienteService {
         return vendedores != null ? vendedores : List.of();
     }
 
+    // Buscar vendedores por nombre o apellido
+    public List<VendedorDTO> buscarVendedores(String texto) {
+
+        if (texto == null || texto.isBlank()) {
+            return List.of();
+        }
+
+        List<VendedorDTO> vendedores = restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/vendedores/buscar")
+                        .queryParam("texto", texto.trim())
+                        .build())
+                .retrieve()
+                .body(new ParameterizedTypeReference<List<VendedorDTO>>() {});
+
+        return vendedores != null ? vendedores : List.of();
+    }
+
     public List<SolicitudVendedorDTO> listarSolicitudesPendientes() {
         List<SolicitudVendedorDTO> solicitudes = restClient.get()
                 .uri("/api/vendedores/pendientes")

@@ -1,171 +1,431 @@
 
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>Gestión de bloques | Zacatlán</title>
+
     <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap/css/zacatlan-theme.css}">
 </head>
 
-<body class="bg-light">
+<body>
 
-<nav class="navbar navbar-dark bg-dark">
-    <div class="container">
-        <a class="navbar-brand" th:href="@{/admin}">Zacatlán</a>
-        <a class="btn btn-outline-light" th:href="@{/admin}">Volver al panel</a>
+<!-- Navegación -->
+<nav class="navbar navbar-dark shadow-sm">
+    <div class="container position-relative">
+
+        <a class="navbar-brand fw-bold" th:href="@{/admin}">
+            Zacatlán
+        </a>
+
+        <span class="navbar-text text-white position-absolute start-50 translate-middle-x d-none d-sm-inline">
+            Gestión de bloques
+        </span>
+
+        <a th:href="@{/logout}" class="btn btn-outline-light btn-sm">
+            Cerrar sesión
+        </a>
+
     </div>
 </nav>
 
-<main class="container py-4">
+<main class="container py-4 py-md-5">
 
-    <h2 class="mb-2">Gestión de bloques</h2>
-    <p class="text-muted">
-        Administra los bloques disponibles para los vendedores.
-    </p>
+    <!-- Encabezado -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
 
-    <div th:if="${mensaje}" class="alert alert-success"
-         th:text="${mensaje}"></div>
+        <div>
+            <h2 class="fw-bold mb-1">Gestión de bloques</h2>
 
-    <div th:if="${error}" class="alert alert-danger"
-         th:text="${error}"></div>
+            <p class="text-muted mb-0">
+                Administra los bloques disponibles para los vendedores.
+                Puedes registrar nuevos bloques, modificar su información
+                y controlar su disponibilidad.
+            </p>
+        </div>
+
+        <a class="btn btn-outline-secondary" th:href="@{/admin}">
+            <span aria-hidden="true">←</span> Volver al panel
+        </a>
+
+    </div>
+
+    <!-- Mensajes -->
+    <div th:if="${mensaje}"
+         class="alert alert-success alert-dismissible fade show shadow-sm"
+         role="alert">
+
+        <span th:text="${mensaje}"></span>
+
+        <button type="button" class="btn-close"
+                data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+
+    <div th:if="${error}"
+         class="alert alert-danger alert-dismissible fade show shadow-sm"
+         role="alert">
+
+        <span th:text="${error}"></span>
+
+        <button type="button" class="btn-close"
+                data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
 
     <!-- Crear bloque -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-dark text-white">
-            Crear nuevo bloque
+    <section class="card mb-4">
+
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+
+            <div>
+                <h5 class="mb-0">Registrar nuevo bloque</h5>
+                <small class="text-muted">
+                    Agrega una nueva sección al mercado.
+                </small>
+            </div>
+
+            <span class="badge text-bg-primary">
+                Nuevo registro
+            </span>
+
         </div>
 
         <div class="card-body">
+
             <form th:action="@{/admin/bloques/crear}" method="post">
 
-                <div class="mb-3">
-                    <label for="nombre" class="form-label">Nombre</label>
-                    <input type="text"
-                           class="form-control"
-                           id="nombre"
-                           name="nombre"
-                           maxlength="100"
-                           required>
+                <div class="row g-3">
+
+                    <div class="col-12 col-lg-5">
+
+                        <label for="nombre" class="form-label">
+                            Nombre del bloque
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               id="nombre"
+                               name="nombre"
+                               maxlength="100"
+                               placeholder="Ej. Artesanías"
+                               required>
+
+                    </div>
+
+                    <div class="col-12 col-lg-7">
+
+                        <label for="descripcion" class="form-label">
+                            Descripción
+                        </label>
+
+                        <textarea class="form-control"
+                                  id="descripcion"
+                                  name="descripcion"
+                                  maxlength="255"
+                                  rows="2"
+                                  placeholder="Describe brevemente este bloque..."></textarea>
+
+                    </div>
+
+                    <div class="col-12">
+
+                        <button type="submit" class="btn btn-primary px-4">
+                            Crear bloque
+                        </button>
+
+                    </div>
+
                 </div>
 
-                <div class="mb-3">
-                    <label for="descripcion" class="form-label">
-                        Descripción
-                    </label>
-                    <textarea class="form-control"
-                              id="descripcion"
-                              name="descripcion"
-                              maxlength="255"
-                              rows="2"></textarea>
-                </div>
-
-                <button type="submit" class="btn btn-primary">
-                    Crear bloque
-                </button>
             </form>
+
         </div>
-    </div>
+    </section>
 
     <!-- Listado de bloques -->
-    <div class="card shadow-sm">
-        <div class="card-header bg-dark text-white">
-            Bloques registrados
+    <section class="card">
+
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+
+            <div>
+                <h5 class="mb-0">Bloques registrados</h5>
+                <small class="text-muted">
+                    Consulta y administra los bloques existentes.
+                </small>
+            </div>
+
+            <span class="badge text-bg-info">
+                Administración
+            </span>
+
         </div>
 
         <div class="card-body">
 
+            <!-- Sin registros -->
             <div th:if="${#lists.isEmpty(bloques)}"
                  class="alert alert-info mb-0">
-                No hay bloques registrados.
+
+                No hay bloques registrados actualmente.
+
             </div>
 
-            <div th:unless="${#lists.isEmpty(bloques)}"
-                 class="table-responsive">
+            <div th:unless="${#lists.isEmpty(bloques)}">
 
-                <table class="table table-striped table-hover align-middle">
+                <!-- Filtros -->
+                <div class="bg-light border rounded-3 p-3 mb-4">
 
-                    <thead class="table-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Descripción</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                    </thead>
+                    <div class="row g-3 align-items-end">
 
-                    <tbody>
-                    <tr th:each="bloque : ${bloques}">
+                        <div class="col-12 col-md-6">
 
-                        <td th:text="${bloque.id}"></td>
+                            <label for="buscarBloque" class="form-label">
+                                Buscar bloque
+                            </label>
 
-                        <td>
-                            <form th:action="@{/admin/bloques/modificar/{id}(id=${bloque.id})}"
-                                  method="post">
+                            <input type="text"
+                                   id="buscarBloque"
+                                   class="form-control"
+                                   placeholder="Escribe el nombre del bloque...">
 
-                                <input type="text"
-                                       name="nombre"
-                                       class="form-control mb-2"
-                                       th:value="${bloque.nombre}"
-                                       maxlength="100"
-                                       required>
+                        </div>
 
-                                <textarea name="descripcion"
-                                          class="form-control mb-2"
-                                          rows="2"
-                                          maxlength="255"
-                                          th:text="${bloque.descripcion}"></textarea>
+                        <div class="col-12 col-md-4">
 
-                                <button type="submit"
-                                        class="btn btn-sm btn-primary">
-                                    Guardar cambios
-                                </button>
-                            </form>
-                        </td>
+                            <label for="filtroEstado" class="form-label">
+                                Estado
+                            </label>
 
-                        <td>
-                            <span th:text="${bloque.descripcion}"></span>
-                        </td>
+                            <select id="filtroEstado" class="form-select">
 
-                        <td>
-                            <span th:if="${bloque.activo}"
-                                  class="badge text-bg-success">
-                                Activo
-                            </span>
+                                <option value="todos">Todos los estados</option>
+                                <option value="activo">Activos</option>
+                                <option value="inactivo">Inactivos</option>
 
-                            <span th:unless="${bloque.activo}"
-                                  class="badge text-bg-secondary">
-                                Inactivo
-                            </span>
-                        </td>
+                            </select>
 
-                        <td>
-                            <form th:action="@{/admin/bloques/estado/{id}(id=${bloque.id})}"
-                                  method="post">
+                        </div>
 
-                                <input type="hidden"
-                                       name="activar"
-                                       th:value="${!bloque.activo}">
+                        <div class="col-12 col-md-2">
 
-                                <button type="submit"
-                                        class="btn btn-sm"
-                                        th:classappend="${bloque.activo} ? ' btn-danger' : ' btn-success'"
-                                        th:text="${bloque.activo} ? 'Desactivar' : 'Activar'">
-                                </button>
-                            </form>
-                        </td>
+                            <button type="button"
+                                    id="limpiarFiltros"
+                                    class="btn btn-outline-secondary w-100">
 
-                    </tr>
-                    </tbody>
+                                Limpiar filtros
 
-                </table>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Sin resultados -->
+                <div id="sinResultados"
+                     class="alert alert-warning d-none">
+
+                    No se encontraron bloques con los filtros seleccionados.
+
+                </div>
+
+                <!-- Tabla -->
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle"
+                           id="tablaBloques">
+
+                        <thead>
+                        <tr>
+                            <th style="min-width: 250px;">Bloque y edición</th>
+                            <th style="min-width: 200px;">Descripción actual</th>
+                            <th style="min-width: 110px;">Estado</th>
+                            <th style="min-width: 130px;">Acciones</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+
+                        <tr th:each="bloque : ${bloques}"
+                            th:attr="data-nombre=${#strings.toLowerCase(bloque.nombre)},
+                                     data-estado=${bloque.activo ? 'activo' : 'inactivo'}">
+
+                            <!-- Edición -->
+                            <td>
+
+                                <form th:action="@{/admin/bloques/modificar/{id}(id=${bloque.id})}"
+                                      method="post">
+
+                                    <label class="form-label small">
+                                        Nombre
+                                    </label>
+
+                                    <input type="text"
+                                           name="nombre"
+                                           class="form-control mb-2"
+                                           th:value="${bloque.nombre}"
+                                           maxlength="100"
+                                           required>
+
+                                    <label class="form-label small">
+                                        Descripción
+                                    </label>
+
+                                    <textarea name="descripcion"
+                                              class="form-control mb-2"
+                                              rows="2"
+                                              maxlength="255"
+                                              th:text="${bloque.descripcion}"></textarea>
+
+                                    <button type="submit"
+                                            class="btn btn-primary btn-sm">
+
+                                        Guardar cambios
+
+                                    </button>
+
+                                </form>
+
+                            </td>
+
+                            <!-- Descripción actual -->
+                            <td>
+
+                                <span th:text="${bloque.descripcion != null && !#strings.isEmpty(bloque.descripcion) ? bloque.descripcion : 'Sin descripción'}">
+                                </span>
+
+                            </td>
+
+                            <!-- Estado -->
+                            <td>
+
+                                <span th:if="${bloque.activo}"
+                                      class="badge text-bg-success">
+
+                                    Activo
+
+                                </span>
+
+                                <span th:unless="${bloque.activo}"
+                                      class="badge text-bg-secondary">
+
+                                    Inactivo
+
+                                </span>
+
+                            </td>
+
+                            <!-- Acciones -->
+                            <td>
+
+                                <form th:action="@{/admin/bloques/estado/{id}(id=${bloque.id})}"
+                                      method="post">
+
+                                    <input type="hidden"
+                                           name="activar"
+                                           th:value="${!bloque.activo}">
+
+                                    <button type="submit"
+                                            class="btn btn-sm"
+                                            th:classappend="${bloque.activo} ? ' btn-danger' : ' btn-success'"
+                                            th:text="${bloque.activo} ? 'Desactivar' : 'Activar'">
+
+                                    </button>
+
+                                </form>
+
+                            </td>
+
+                        </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
             </div>
+
         </div>
-    </div>
+    </section>
+
+    <!-- Pie -->
+    <footer class="text-center mt-4">
+
+        <small class="text-muted">
+            Zacatlán | Administración de bloques
+        </small>
+
+    </footer>
 
 </main>
 
+<script>
+    const buscarBloque = document.getElementById('buscarBloque');
+    const filtroEstado = document.getElementById('filtroEstado');
+    const limpiarFiltros = document.getElementById('limpiarFiltros');
+    const tablaBloques = document.getElementById('tablaBloques');
+    const sinResultados = document.getElementById('sinResultados');
+
+    function filtrarBloques() {
+
+        if (!tablaBloques) {
+            return;
+        }
+
+        const texto = buscarBloque.value.trim().toLowerCase();
+        const estado = filtroEstado.value;
+
+        const filas = tablaBloques.querySelectorAll('tbody tr');
+
+        let encontrados = 0;
+
+        filas.forEach(fila => {
+
+            const nombre = fila.dataset.nombre || '';
+            const estadoBloque = fila.dataset.estado;
+
+            const coincideNombre = nombre.includes(texto);
+
+            const coincideEstado =
+                estado === 'todos' || estado === estadoBloque;
+
+            const mostrar = coincideNombre && coincideEstado;
+
+            fila.style.display = mostrar ? '' : 'none';
+
+            if (mostrar) {
+                encontrados++;
+            }
+
+        });
+
+        sinResultados.classList.toggle('d-none', encontrados > 0);
+    }
+
+    if (buscarBloque && filtroEstado && limpiarFiltros) {
+
+        buscarBloque.addEventListener('input', filtrarBloques);
+
+        filtroEstado.addEventListener('change', filtrarBloques);
+
+        limpiarFiltros.addEventListener('click', () => {
+
+            buscarBloque.value = '';
+            filtroEstado.value = 'todos';
+
+            filtrarBloques();
+
+        });
+
+    }
+</script>
+
 <script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
 </body>
 </html>

@@ -56,6 +56,20 @@ public class VentaClienteService {
                 .body(TIPO_LISTA);
     }
 
+    // Consultar ventas de un vendedor en un día específico
+    public List<Map<String, Object>> listarVentasPorVendedorYDia(
+            Long idVendedor,
+            LocalDate fecha) {
+
+        return restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/ventas/vendedor/{idVendedor}/dia")
+                        .queryParam("fecha", fecha)
+                        .build(idVendedor))
+                .retrieve()
+                .body(TIPO_LISTA);
+    }
+
     // Consultar ventas por rango de fechas
     public List<Map<String, Object>> listarVentasPorRango(
             LocalDate fechaInicio,
@@ -105,14 +119,61 @@ public class VentaClienteService {
                 .body(TIPO_LISTA);
     }
 
-    // Descargar reporte PDF desde la API
+    // Descargar reporte PDF diario conservando la compatibilidad anterior
     public byte[] descargarReportePdf(LocalDate fecha) {
+        return descargarReportePdf(fecha, null, null);
+    }
+
+    // Descargar reporte PDF diario con filtros opcionales
+    public byte[] descargarReportePdf(
+            LocalDate fecha,
+            String producto,
+            Long idVendedor) {
 
         return restClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/api/ventas/reporte/pdf")
-                        .queryParam("fecha", fecha)
-                        .build())
+                .uri(uriBuilder -> {
+                    uriBuilder
+                            .path("/api/ventas/reporte/pdf")
+                            .queryParam("fecha", fecha);
+
+                    if (producto != null && !producto.isBlank()) {
+                        uriBuilder.queryParam("producto", producto.trim());
+                    }
+
+                    if (idVendedor != null) {
+                        uriBuilder.queryParam("idVendedor", idVendedor);
+                    }
+
+                    return uriBuilder.build();
+                })
+                .retrieve()
+                .body(byte[].class);
+    }
+
+    // Descargar reporte PDF por rango de fechas con filtros opcionales
+    public byte[] descargarReportePdfRango(
+            LocalDate fechaInicio,
+            LocalDate fechaFin,
+            String producto,
+            Long idVendedor) {
+
+        return restClient.get()
+                .uri(uriBuilder -> {
+                    uriBuilder
+                            .path("/api/ventas/reporte/rango/pdf")
+                            .queryParam("fechaInicio", fechaInicio)
+                            .queryParam("fechaFin", fechaFin);
+
+                    if (producto != null && !producto.isBlank()) {
+                        uriBuilder.queryParam("producto", producto.trim());
+                    }
+
+                    if (idVendedor != null) {
+                        uriBuilder.queryParam("idVendedor", idVendedor);
+                    }
+
+                    return uriBuilder.build();
+                })
                 .retrieve()
                 .body(byte[].class);
     }

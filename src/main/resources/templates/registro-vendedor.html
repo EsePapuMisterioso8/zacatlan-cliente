@@ -1,51 +1,75 @@
 
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Registro de vendedor | Zacatlán</title>
 
   <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+  <link rel="stylesheet" th:href="@{/bootstrap/css/zacatlan-theme.css}">
 </head>
 
 <body class="bg-light">
 
-<nav class="navbar navbar-dark bg-dark shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
   <div class="container">
-    <a class="navbar-brand fw-bold" th:href="@{/}">Zacatlán</a>
-    <span class="navbar-text text-white">Registro de vendedores</span>
+    <a class="navbar-brand fw-bold" th:href="@{/}">
+      Zacatlán
+    </a>
+
+    <span class="navbar-text text-white d-none d-sm-inline">
+            Registro de vendedores
+        </span>
+
+    <a th:href="@{/login}" class="btn btn-outline-light btn-sm">
+      Iniciar sesión
+    </a>
   </div>
 </nav>
 
-<main class="container py-5">
+<main class="container py-4 py-lg-5">
+
   <div class="row justify-content-center">
-    <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+    <div class="col-12 col-lg-9 col-xl-8">
 
-      <div class="card border-0 shadow">
+      <!-- Encabezado -->
+      <div class="text-center mb-4">
+        <h2 class="fw-bold mb-2">Solicitud de registro</h2>
 
-        <div class="card-header bg-primary text-white text-center py-4">
-          <h2 class="mb-1">Solicitud de registro</h2>
-          <p class="mb-0">Forma parte de nuestros vendedores</p>
+        <p class="text-muted mb-0">
+          Forma parte de nuestros vendedores y ofrece tus productos
+          dentro del mercado de Zacatlán.
+        </p>
+      </div>
+
+      <div class="card border-0 shadow-sm">
+
+        <!-- Cabecera -->
+        <div class="card-header bg-dark text-white p-4">
+          <h5 class="fw-bold mb-1">
+            Registro de vendedor
+          </h5>
+
+          <p class="mb-0 text-white-50">
+            Completa tus datos personales y de acceso.
+          </p>
         </div>
 
-        <div class="card-body p-4 p-md-5">
-
-          <p class="text-muted text-center mb-4">
-            Completa tus datos y selecciona el bloque
-            al que deseas pertenecer.
-          </p>
+        <div class="card-body p-3 p-md-4 p-lg-5">
 
           <!-- Mensaje de éxito -->
           <div th:if="${mensaje}"
-               class="alert alert-success"
+               class="alert alert-success shadow-sm"
                role="alert"
                th:text="${mensaje}">
           </div>
 
           <!-- Mensaje de error -->
           <div th:if="${error}"
-               class="alert alert-danger"
+               class="alert alert-danger shadow-sm"
                role="alert"
                th:text="${error}">
           </div>
@@ -54,177 +78,224 @@
                 method="post"
                 id="formRegistro">
 
-            <h5 class="fw-bold mb-3">Datos personales</h5>
-
-            <!-- Nombre -->
-            <div class="mb-3">
-              <label for="nombre" class="form-label fw-semibold">
-                Nombre
-              </label>
-
-              <input type="text"
-                     class="form-control"
-                     id="nombre"
-                     name="nombre"
-                     maxlength="100"
-                     placeholder="Ingresa tu nombre"
-                     th:value="${nombre}"
-                     required>
-            </div>
-
-            <!-- Apellido -->
-            <div class="mb-3">
-              <label for="apellido" class="form-label fw-semibold">
-                Apellido
-              </label>
-
-              <input type="text"
-                     class="form-control"
-                     id="apellido"
-                     name="apellido"
-                     maxlength="100"
-                     placeholder="Ingresa tus apellidos"
-                     th:value="${apellido}"
-                     required>
-            </div>
-
-            <!-- Teléfono -->
-            <div class="mb-3">
-              <label for="telefono" class="form-label fw-semibold">
-                Teléfono
-              </label>
-
-              <input type="tel"
-                     class="form-control"
-                     id="telefono"
-                     name="telefono"
-                     maxlength="10"
-                     pattern="[0-9]{10}"
-                     placeholder="Ej. 7711234567"
-                     th:value="${telefono}"
-                     required>
-
-              <div class="form-text">
-                Ingresa un número de 10 dígitos.
-              </div>
-            </div>
-
-            <!-- Bloque -->
+            <!-- Datos personales -->
             <div class="mb-4">
-              <label for="idBloque" class="form-label fw-semibold">
-                Bloque al que deseas pertenecer
-              </label>
 
-              <select class="form-select"
-                      id="idBloque"
-                      name="idBloque"
-                      required>
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <span class="badge bg-primary rounded-pill">1</span>
+                <h5 class="fw-bold mb-0">Datos personales</h5>
+              </div>
 
-                <option value=""
-                        disabled
-                        th:selected="${idBloque == null}">
-                  Selecciona un bloque
-                </option>
+              <div class="row g-3">
 
-                <option th:each="bloque : ${bloques}"
-                        th:value="${bloque.id}"
-                        th:text="${bloque.nombre}"
-                        th:selected="${bloque.id == idBloque}">
-                </option>
-              </select>
+                <!-- Nombre -->
+                <div class="col-12 col-md-6">
+                  <label for="nombre"
+                         class="form-label fw-semibold">
+                    Nombre
+                  </label>
+
+                  <input type="text"
+                         class="form-control"
+                         id="nombre"
+                         name="nombre"
+                         maxlength="100"
+                         placeholder="Ingresa tu nombre"
+                         th:value="${nombre}"
+                         required>
+                </div>
+
+                <!-- Apellido -->
+                <div class="col-12 col-md-6">
+                  <label for="apellido"
+                         class="form-label fw-semibold">
+                    Apellido
+                  </label>
+
+                  <input type="text"
+                         class="form-control"
+                         id="apellido"
+                         name="apellido"
+                         maxlength="100"
+                         placeholder="Ingresa tus apellidos"
+                         th:value="${apellido}"
+                         required>
+                </div>
+
+                <!-- Teléfono -->
+                <div class="col-12 col-md-6">
+                  <label for="telefono"
+                         class="form-label fw-semibold">
+                    Teléfono
+                  </label>
+
+                  <input type="tel"
+                         class="form-control"
+                         id="telefono"
+                         name="telefono"
+                         maxlength="10"
+                         pattern="[0-9]{10}"
+                         placeholder="Ej. 7711234567"
+                         th:value="${telefono}"
+                         required>
+
+                  <div class="form-text">
+                    Ingresa un número de 10 dígitos.
+                  </div>
+                </div>
+
+                <!-- Bloque -->
+                <div class="col-12 col-md-6">
+                  <label for="idBloque"
+                         class="form-label fw-semibold">
+                    Bloque al que deseas pertenecer
+                  </label>
+
+                  <select class="form-select"
+                          id="idBloque"
+                          name="idBloque"
+                          required>
+
+                    <option value=""
+                            disabled
+                            th:selected="${idBloque == null}">
+                      Selecciona un bloque
+                    </option>
+
+                    <option th:each="bloque : ${bloques}"
+                            th:value="${bloque.id}"
+                            th:text="${bloque.nombre}"
+                            th:selected="${bloque.id == idBloque}">
+                    </option>
+
+                  </select>
+
+                  <div class="form-text">
+                    Selecciona el bloque en el que deseas participar.
+                  </div>
+                </div>
+
+              </div>
             </div>
 
             <hr class="my-4">
 
-            <h5 class="fw-bold mb-3">Datos de acceso</h5>
-
-            <!-- Nombre de usuario -->
-            <div class="mb-3">
-              <label for="username" class="form-label fw-semibold">
-                Nombre de usuario
-              </label>
-
-              <input type="text"
-                     class="form-control"
-                     id="username"
-                     name="username"
-                     maxlength="50"
-                     autocomplete="username"
-                     placeholder="Elige un nombre de usuario"
-                     th:value="${username}"
-                     required>
-
-              <div class="form-text">
-                Utilizarás este nombre para iniciar sesión.
-              </div>
-            </div>
-
-            <!-- Contraseña -->
-            <div class="mb-3">
-              <label for="password" class="form-label fw-semibold">
-                Contraseña
-              </label>
-
-              <input type="password"
-                     class="form-control"
-                     id="password"
-                     name="password"
-                     minlength="8"
-                     maxlength="72"
-                     autocomplete="new-password"
-                     placeholder="Crea una contraseña"
-                     required>
-
-              <div class="form-text">
-                Debe contener entre 8 y 72 caracteres
-                y no tener espacios.
-              </div>
-            </div>
-
-            <!-- Confirmar contraseña -->
+            <!-- Datos de acceso -->
             <div class="mb-4">
-              <label for="confirmarPassword"
-                     class="form-label fw-semibold">
-                Confirmar contraseña
-              </label>
 
-              <input type="password"
-                     class="form-control"
-                     id="confirmarPassword"
-                     name="confirmarPassword"
-                     minlength="8"
-                     maxlength="72"
-                     autocomplete="new-password"
-                     placeholder="Escribe nuevamente tu contraseña"
-                     required>
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <span class="badge bg-primary rounded-pill">2</span>
+                <h5 class="fw-bold mb-0">Datos de acceso</h5>
+              </div>
 
-              <div id="mensajePassword"
-                   class="form-text">
+              <div class="row g-3">
+
+                <!-- Usuario -->
+                <div class="col-12">
+                  <label for="username"
+                         class="form-label fw-semibold">
+                    Nombre de usuario
+                  </label>
+
+                  <input type="text"
+                         class="form-control"
+                         id="username"
+                         name="username"
+                         maxlength="50"
+                         autocomplete="username"
+                         placeholder="Elige un nombre de usuario"
+                         th:value="${username}"
+                         required>
+
+                  <div class="form-text">
+                    Utilizarás este nombre para iniciar sesión.
+                  </div>
+                </div>
+
+                <!-- Contraseña -->
+                <div class="col-12 col-md-6">
+                  <label for="password"
+                         class="form-label fw-semibold">
+                    Contraseña
+                  </label>
+
+                  <input type="password"
+                         class="form-control"
+                         id="password"
+                         name="password"
+                         minlength="8"
+                         maxlength="72"
+                         autocomplete="new-password"
+                         placeholder="Crea una contraseña"
+                         required>
+
+                  <div class="form-text">
+                    Entre 8 y 72 caracteres, sin espacios.
+                  </div>
+                </div>
+
+                <!-- Confirmar contraseña -->
+                <div class="col-12 col-md-6">
+                  <label for="confirmarPassword"
+                         class="form-label fw-semibold">
+                    Confirmar contraseña
+                  </label>
+
+                  <input type="password"
+                         class="form-control"
+                         id="confirmarPassword"
+                         name="confirmarPassword"
+                         minlength="8"
+                         maxlength="72"
+                         autocomplete="new-password"
+                         placeholder="Repite tu contraseña"
+                         required>
+
+                  <div id="mensajePassword"
+                       class="form-text">
+                  </div>
+                </div>
+
               </div>
             </div>
 
-            <!-- Botón -->
-            <div class="d-grid">
+            <hr class="my-4">
+
+            <!-- Aviso -->
+            <div class="alert alert-info border-0 mb-4">
+              <strong>Importante:</strong>
+              Tu solicitud será revisada por un administrador.
+              Una vez aprobada, podrás iniciar sesión con tus datos
+              de acceso.
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex flex-column flex-sm-row gap-2">
+
+              <a th:href="@{/}"
+                 class="btn btn-outline-secondary flex-fill">
+                Regresar al inicio
+              </a>
+
               <button type="submit"
-                      class="btn btn-primary btn-lg">
+                      class="btn btn-primary flex-fill">
                 Enviar solicitud
               </button>
+
             </div>
 
           </form>
 
         </div>
-
-        <div class="card-footer text-center text-muted py-3">
-          <small>
-            Tu solicitud será revisada por un administrador.
-            Podrás iniciar sesión cuando sea aprobada.
-          </small>
-        </div>
-
       </div>
+
+      <p class="text-center text-muted mt-4 small">
+        Zacatlán · Registro de vendedores
+      </p>
+
     </div>
   </div>
+
 </main>
 
 <script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>

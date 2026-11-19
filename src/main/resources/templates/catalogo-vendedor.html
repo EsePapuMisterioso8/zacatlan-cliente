@@ -1,20 +1,20 @@
 
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Catálogo de productos | Zacatlán</title>
 
     <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap/css/zacatlan-theme.css}">
 </head>
 
-<body class="bg-light">
+<body>
 
-<nav class="navbar navbar-dark bg-dark shadow-sm">
+<nav class="navbar navbar-dark shadow-sm">
     <div class="container">
-
         <a class="navbar-brand fw-bold" th:href="@{/vendedor}">
             Zacatlán
         </a>
@@ -23,36 +23,31 @@
             Catálogo de productos
         </span>
 
-        <a th:href="@{/logout}" class="btn btn-outline-light">
+        <a th:href="@{/logout}" class="btn btn-outline-light btn-sm">
             Cerrar sesión
         </a>
-
     </div>
 </nav>
 
-<main class="container py-5">
+<main class="container py-4 py-md-5">
 
     <!-- Encabezado -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
         <div>
-            <h2 class="fw-bold">Catálogo de productos</h2>
-
+            <h2 class="fw-bold mb-1">Catálogo de productos</h2>
             <p class="text-muted mb-0">
-                Productos disponibles para tu bloque.
+                Consulta los productos disponibles y agrégalos a tu inventario.
             </p>
         </div>
 
-        <a th:href="@{/vendedor}"
-           class="btn btn-outline-secondary">
-            Volver al panel
+        <a th:href="@{/vendedor}" class="btn btn-outline-secondary">
+            <span aria-hidden="true">←</span> Volver al panel
         </a>
-
     </div>
 
-    <!-- Mensaje de éxito -->
+    <!-- Mensajes -->
     <div th:if="${mensaje}"
-         class="alert alert-success alert-dismissible fade show"
+         class="alert alert-success alert-dismissible fade show shadow-sm"
          role="alert">
 
         <span th:text="${mensaje}"></span>
@@ -62,12 +57,10 @@
                 data-bs-dismiss="alert"
                 aria-label="Cerrar">
         </button>
-
     </div>
 
-    <!-- Mensaje de error -->
     <div th:if="${error}"
-         class="alert alert-danger alert-dismissible fade show"
+         class="alert alert-danger alert-dismissible fade show shadow-sm"
          role="alert">
 
         <span th:text="${error}"></span>
@@ -77,25 +70,39 @@
                 data-bs-dismiss="alert"
                 aria-label="Cerrar">
         </button>
-
     </div>
 
     <!-- Bloque asignado -->
     <div th:if="${bloque != null}"
-         class="alert alert-primary">
+         class="card border-0 shadow-sm mb-4">
 
-        <strong>Tu bloque:</strong>
+        <div class="card-body d-flex align-items-center gap-3">
+            <div class="rounded-3 bg-primary bg-opacity-10 text-primary p-3">
+                <span class="fs-4" aria-hidden="true">▦</span>
+            </div>
 
-        <span th:text="${bloque.nombreBloque}"></span>
-
+            <div>
+                <small class="text-muted d-block">
+                    Tu bloque asignado
+                </small>
+                <h5 class="fw-bold mb-0" th:text="${bloque.nombreBloque}">
+                    Nombre del bloque
+                </h5>
+            </div>
+        </div>
     </div>
 
     <!-- Catálogo vacío -->
     <div th:if="${#lists.isEmpty(productos) and error == null}"
-         class="alert alert-info">
+         class="card border-0 shadow-sm">
 
-        No hay productos disponibles en tu bloque actualmente.
-
+        <div class="card-body text-center py-5">
+            <div class="fs-1 mb-3" aria-hidden="true">▤</div>
+            <h5 class="fw-bold">No hay productos disponibles</h5>
+            <p class="text-muted mb-0">
+                Actualmente no hay productos disponibles en tu bloque.
+            </p>
+        </div>
     </div>
 
     <!-- Tabla de productos -->
@@ -103,37 +110,92 @@
          class="card border-0 shadow-sm">
 
         <div class="card-header bg-white py-3">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
+                <div>
+                    <h5 class="fw-bold mb-1">Productos disponibles</h5>
+                    <small class="text-muted">
+                        Agrega productos a tu inventario estableciendo su precio inicial.
+                    </small>
+                </div>
 
-            <h5 class="fw-bold mb-0">
-                Productos disponibles
-            </h5>
-
+                <span class="badge text-bg-primary rounded-pill px-3 py-2"
+                      th:text="${#lists.size(productos)} + ' productos'">
+                    0 productos
+                </span>
+            </div>
         </div>
 
-        <div class="card-body">
+        <div class="card-body p-3 p-md-4">
 
+            <!-- Filtros -->
+            <div class="bg-light rounded-3 p-3 mb-4">
+
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <span class="text-primary" aria-hidden="true">⌕</span>
+                    <h6 class="fw-bold mb-0">Buscar productos</h6>
+                </div>
+
+                <div class="row g-3">
+
+                    <div class="col-12 col-md-6">
+                        <label for="buscarProducto" class="form-label fw-semibold">
+                            Nombre del producto
+                        </label>
+
+                        <input type="text"
+                               id="buscarProducto"
+                               class="form-control"
+                               placeholder="Escribe el nombre del producto...">
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label for="filtroEstado" class="form-label fw-semibold">
+                            Estado
+                        </label>
+
+                        <select id="filtroEstado" class="form-select">
+                            <option value="todos">Todos los estados</option>
+                            <option value="disponible">Disponibles</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-2 d-flex align-items-end">
+                        <button type="button"
+                                id="limpiarFiltros"
+                                class="btn btn-outline-secondary w-100">
+                            Limpiar
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Sin resultados -->
+            <div id="sinResultados"
+                 class="alert alert-warning text-center d-none"
+                 role="status">
+                No se encontraron productos con los filtros seleccionados.
+            </div>
+
+            <!-- Tabla -->
             <div class="table-responsive">
 
-                <table class="table table-hover align-middle">
+                <table class="table table-hover table-striped align-middle mb-0">
 
-                    <thead class="table-dark">
-
+                    <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Producto</th>
                         <th>Descripción</th>
                         <th>Estado</th>
                         <th>Agregar al inventario</th>
                     </tr>
-
                     </thead>
 
-                    <tbody>
+                    <tbody id="tablaProductos">
 
-                    <tr th:each="producto : ${productos}">
-
-                        <!-- ID -->
-                        <td th:text="${producto.id}"></td>
+                    <tr th:each="producto : ${productos}"
+                        th:attr="data-nombre=${producto.nombre != null ? #strings.toLowerCase(producto.nombre) : ''},
+                                 data-estado='disponible'">
 
                         <!-- Nombre -->
                         <td class="fw-semibold"
@@ -145,19 +207,16 @@
 
                         <!-- Estado -->
                         <td>
-
                             <span class="badge text-bg-success">
                                 Disponible
                             </span>
-
                         </td>
 
-                        <!-- Asignar precio inicial y agregar -->
+                        <!-- Agregar al inventario -->
                         <td>
-
                             <form th:action="@{/vendedor/catalogo/agregar}"
                                   method="post"
-                                  class="d-flex gap-2 align-items-center">
+                                  class="d-flex flex-column flex-sm-row gap-2 align-items-sm-center">
 
                                 <input type="hidden"
                                        name="idProducto"
@@ -170,35 +229,80 @@
                                        step="0.01"
                                        placeholder="Precio"
                                        aria-label="Precio inicial"
-                                       style="width: 110px;"
+                                       style="width: 120px; max-width: 100%;"
                                        required>
 
                                 <button type="submit"
                                         class="btn btn-success btn-sm">
-
-                                    <span>Agregar</span>
-
+                                    <span aria-hidden="true">+</span>
+                                    Agregar
                                 </button>
 
                             </form>
-
                         </td>
 
                     </tr>
 
                     </tbody>
-
                 </table>
 
             </div>
-
         </div>
-
     </div>
 
 </main>
 
 <script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const buscarProducto = document.getElementById("buscarProducto");
+        const filtroEstado = document.getElementById("filtroEstado");
+        const limpiarFiltros = document.getElementById("limpiarFiltros");
+        const filas = document.querySelectorAll("#tablaProductos tr");
+        const sinResultados = document.getElementById("sinResultados");
+
+        function aplicarFiltros() {
+
+            const nombre = buscarProducto.value.trim().toLowerCase();
+            const estado = filtroEstado.value;
+
+            let productosVisibles = 0;
+
+            filas.forEach(function (fila) {
+
+                const nombreProducto = fila.dataset.nombre || "";
+                const estadoProducto = fila.dataset.estado;
+
+                const coincideNombre = nombreProducto.includes(nombre);
+
+                const coincideEstado =
+                    estado === "todos" || estadoProducto === estado;
+
+                const mostrar = coincideNombre && coincideEstado;
+
+                fila.style.display = mostrar ? "" : "none";
+
+                if (mostrar) {
+                    productosVisibles++;
+                }
+            });
+
+            sinResultados.classList.toggle("d-none", productosVisibles > 0);
+        }
+
+        buscarProducto.addEventListener("input", aplicarFiltros);
+        filtroEstado.addEventListener("change", aplicarFiltros);
+
+        limpiarFiltros.addEventListener("click", function () {
+            buscarProducto.value = "";
+            filtroEstado.value = "todos";
+            aplicarFiltros();
+        });
+
+    });
+</script>
 
 </body>
 </html>

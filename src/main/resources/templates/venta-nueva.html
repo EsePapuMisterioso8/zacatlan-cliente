@@ -39,7 +39,7 @@
             <span class="badge bg-primary mb-2">Área de vendedor</span>
             <h2 class="fw-bold mb-1">Registrar venta</h2>
             <p class="text-muted mb-0">
-                Registra una venta de los productos disponibles en tu inventario.
+                Agrega uno o varios productos disponibles en tu inventario.
             </p>
         </div>
 
@@ -66,7 +66,7 @@
     </div>
 
     <div class="row justify-content-center">
-        <div class="col-12 col-lg-9 col-xl-8">
+        <div class="col-12 col-xl-10">
 
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
 
@@ -81,13 +81,11 @@
                         </div>
 
                         <div>
-                            <h5 class="fw-bold mb-1"
-                                style="color: #ffffff;">
+                            <h5 class="fw-bold mb-1" style="color: #ffffff;">
                                 Datos de la venta
                             </h5>
-                            <p class="small mb-0"
-                               style="color: #e2e8f0;">
-                                Completa los datos para registrar la operación.
+                            <p class="small mb-0" style="color: #e2e8f0;">
+                                Agrega los productos, indica sus cantidades y precios.
                             </p>
                         </div>
                     </div>
@@ -99,10 +97,11 @@
                           method="post"
                           id="formVenta">
 
-                        <!-- Producto -->
+                        <!-- Selección de producto -->
                         <div class="mb-4">
+
                             <label for="buscarProducto" class="form-label fw-semibold">
-                                Producto
+                                Buscar producto
                             </label>
 
                             <input type="text"
@@ -110,11 +109,6 @@
                                    id="buscarProducto"
                                    placeholder="Escribe el nombre del producto..."
                                    autocomplete="off">
-
-                            <input type="hidden"
-                                   id="idProductoVendedor"
-                                   name="idProductoVendedor"
-                                   required>
 
                             <div id="sugerenciasProductos"
                                  class="list-group mt-2 shadow-sm rounded-3"
@@ -129,6 +123,7 @@
                                                  data-precio=${producto.precio}"
                                         th:text="${producto.nombreProducto + ' - $' + producto.precio}">
                                 </button>
+
                             </div>
 
                             <div id="productoSeleccionado"
@@ -137,14 +132,14 @@
                             </div>
 
                             <div class="form-text mt-2">
-                                Busca y selecciona un producto de tu inventario activo.
+                                Selecciona un producto de tu inventario activo.
                             </div>
                         </div>
 
-                        <div class="row g-3">
+                        <!-- Cantidad y precio -->
+                        <div class="row g-3 align-items-end">
 
-                            <!-- Cantidad -->
-                            <div class="col-md-6">
+                            <div class="col-md-5">
                                 <label for="cantidad" class="form-label fw-semibold">
                                     Cantidad
                                 </label>
@@ -152,18 +147,15 @@
                                 <input type="number"
                                        class="form-control form-control-lg"
                                        id="cantidad"
-                                       name="cantidad"
                                        min="1"
-                                       value="1"
-                                       required>
+                                       value="1">
 
                                 <div class="form-text">
-                                    Número de unidades que se venderán.
+                                    Número de unidades.
                                 </div>
                             </div>
 
-                            <!-- Precio -->
-                            <div class="col-md-6">
+                            <div class="col-md-5">
                                 <label for="precioVenta" class="form-label fw-semibold">
                                     Precio por unidad ($)
                                 </label>
@@ -171,32 +163,84 @@
                                 <input type="number"
                                        class="form-control form-control-lg"
                                        id="precioVenta"
-                                       name="precioVenta"
                                        min="0.01"
                                        step="0.01"
-                                       placeholder="Ej. 85.00"
-                                       required>
+                                       placeholder="Ej. 85.00">
 
                                 <div class="form-text">
-                                    Ingresa el precio al que realizarás la venta.
+                                    Puedes indicar un precio negociado.
                                 </div>
+                            </div>
+
+                            <div class="col-md-2 d-grid">
+                                <button type="button"
+                                        id="btnAgregarProducto"
+                                        class="btn btn-success btn-lg">
+                                    Agregar
+                                </button>
                             </div>
 
                         </div>
 
                         <hr class="my-4">
 
+                        <!-- Productos agregados -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <h5 class="fw-bold mb-0">Productos de la venta</h5>
+                                <span class="badge bg-secondary" id="contadorProductos">
+                                    0 productos
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>Producto</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th class="text-end">Precio unitario</th>
+                                    <th class="text-end">Subtotal</th>
+                                    <th class="text-center">Acción</th>
+                                </tr>
+                                </thead>
+
+                                <tbody id="tablaProductos">
+                                <tr id="filaVacia">
+                                    <td colspan="5" class="text-center text-muted py-4">
+                                        Todavía no has agregado productos.
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Total -->
+                        <div class="d-flex justify-content-end mt-4">
+                            <div class="text-end">
+                                <span class="text-muted">Total de la venta</span>
+                                <h3 class="fw-bold mb-0" id="totalVenta">$0.00</h3>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
                         <!-- Acciones -->
                         <div class="d-flex flex-column flex-sm-row gap-2 justify-content-end">
+
                             <a th:href="@{/vendedor}"
                                class="btn btn-outline-secondary px-4">
                                 Cancelar
                             </a>
 
                             <button type="submit"
-                                    class="btn btn-primary px-4">
+                                    id="btnRegistrarVenta"
+                                    class="btn btn-primary px-4"
+                                    disabled>
                                 Registrar venta
                             </button>
+
                         </div>
 
                     </form>
@@ -204,7 +248,7 @@
             </div>
 
             <p class="text-muted text-center small mt-3">
-                Verifica el producto, la cantidad y el precio antes de registrar la venta.
+                Verifica los productos, las cantidades y los precios antes de registrar la venta.
             </p>
 
         </div>
@@ -214,29 +258,50 @@
 
 <script>
     const buscarProducto = document.getElementById('buscarProducto');
-    const idProducto = document.getElementById('idProductoVendedor');
     const sugerencias = document.getElementById('sugerenciasProductos');
     const productoSeleccionado = document.getElementById('productoSeleccionado');
+    const cantidadInput = document.getElementById('cantidad');
+    const precioInput = document.getElementById('precioVenta');
+    const btnAgregar = document.getElementById('btnAgregarProducto');
     const formVenta = document.getElementById('formVenta');
 
-    const productos = Array.from(
+    const tablaProductos = document.getElementById('tablaProductos');
+    const filaVacia = document.getElementById('filaVacia');
+    const totalVenta = document.getElementById('totalVenta');
+    const contadorProductos = document.getElementById('contadorProductos');
+    const btnRegistrarVenta = document.getElementById('btnRegistrarVenta');
+
+    const productosDisponibles = Array.from(
         sugerencias.querySelectorAll('button')
     );
 
+    const carrito = [];
+
+    let productoActual = null;
+
+    const formatoMoneda = new Intl.NumberFormat('es-MX', {
+        style: 'currency',
+        currency: 'MXN'
+    });
+
+    // Buscar productos
     buscarProducto.addEventListener('input', function () {
+
         const texto = this.value.trim().toLowerCase();
 
-        idProducto.value = '';
+        productoActual = null;
         productoSeleccionado.style.display = 'none';
 
-        productos.forEach(function (producto) {
+        productosDisponibles.forEach(function (producto) {
+
             const nombre = producto.dataset.nombre.toLowerCase();
+
             const coincide = texto !== '' && nombre.includes(texto);
 
             producto.style.display = coincide ? '' : 'none';
         });
 
-        const hayResultados = productos.some(function (producto) {
+        const hayResultados = productosDisponibles.some(function (producto) {
             return producto.style.display !== 'none';
         });
 
@@ -244,34 +309,209 @@
             texto !== '' && hayResultados ? 'block' : 'none';
     });
 
-    productos.forEach(function (producto) {
-        producto.addEventListener('click', function () {
-            const id = this.dataset.id;
-            const nombre = this.dataset.nombre;
-            const precio = this.dataset.precio;
+    // Seleccionar un producto
+    productosDisponibles.forEach(function (producto) {
 
-            idProducto.value = id;
-            buscarProducto.value = nombre;
+        producto.addEventListener('click', function () {
+
+            productoActual = {
+                id: this.dataset.id,
+                nombre: this.dataset.nombre,
+                precio: this.dataset.precio
+            };
+
+            buscarProducto.value = productoActual.nombre;
+            precioInput.value = Number(productoActual.precio).toFixed(2);
+            cantidadInput.value = 1;
 
             productoSeleccionado.textContent =
-                'Producto seleccionado: ' + nombre + ' - $' + precio;
+                'Producto seleccionado: ' + productoActual.nombre;
 
             productoSeleccionado.style.display = 'block';
             sugerencias.style.display = 'none';
+
+            cantidadInput.focus();
         });
     });
 
-    formVenta.addEventListener('submit', function (event) {
-        if (!idProducto.value) {
-            event.preventDefault();
-            alert('Debes buscar y seleccionar un producto de la lista.');
+    // Crear una celda de texto
+    function crearCelda(texto, clase) {
+
+        const celda = document.createElement('td');
+
+        if (clase) {
+            celda.className = clase;
+        }
+
+        celda.textContent = texto;
+
+        return celda;
+    }
+
+    // Agregar producto al carrito
+    btnAgregar.addEventListener('click', function () {
+
+        if (!productoActual) {
+            alert('Debes buscar y seleccionar un producto.');
             buscarProducto.focus();
+            return;
+        }
+
+        const cantidad = Number(cantidadInput.value);
+        const precio = Number(precioInput.value);
+
+        if (!Number.isInteger(cantidad) || cantidad <= 0) {
+            alert('La cantidad debe ser un número entero mayor que cero.');
+            cantidadInput.focus();
+            return;
+        }
+
+        if (!Number.isFinite(precio) || precio <= 0) {
+            alert('El precio debe ser mayor que cero.');
+            precioInput.focus();
+            return;
+        }
+
+        const repetido = carrito.some(function (item) {
+            return item.id === productoActual.id;
+        });
+
+        if (repetido) {
+            alert('Este producto ya está agregado a la venta.');
+            return;
+        }
+
+        carrito.push({
+            id: productoActual.id,
+            nombre: productoActual.nombre,
+            cantidad: cantidad,
+            precio: precio
+        });
+
+        actualizarCarrito();
+
+        // Limpiar selección para agregar otro producto
+        productoActual = null;
+        buscarProducto.value = '';
+        cantidadInput.value = 1;
+        precioInput.value = '';
+        productoSeleccionado.style.display = 'none';
+
+        buscarProducto.focus();
+    });
+
+    // Actualizar tabla, campos enviados y total
+    function actualizarCarrito() {
+
+        tablaProductos.innerHTML = '';
+
+        let total = 0;
+
+        if (carrito.length === 0) {
+
+            const fila = document.createElement('tr');
+            const celda = document.createElement('td');
+
+            celda.colSpan = 5;
+            celda.className = 'text-center text-muted py-4';
+            celda.textContent = 'Todavía no has agregado productos.';
+
+            fila.appendChild(celda);
+            tablaProductos.appendChild(fila);
+
+        } else {
+
+            carrito.forEach(function (item, indice) {
+
+                const subtotal = item.cantidad * item.precio;
+                total += subtotal;
+
+                const fila = document.createElement('tr');
+
+                fila.appendChild(crearCelda(item.nombre));
+                fila.appendChild(
+                    crearCelda(String(item.cantidad), 'text-center')
+                );
+                fila.appendChild(
+                    crearCelda(formatoMoneda.format(item.precio), 'text-end')
+                );
+                fila.appendChild(
+                    crearCelda(formatoMoneda.format(subtotal), 'text-end fw-semibold')
+                );
+
+                const celdaAccion = document.createElement('td');
+                celdaAccion.className = 'text-center';
+
+                const botonEliminar = document.createElement('button');
+                botonEliminar.type = 'button';
+                botonEliminar.className = 'btn btn-outline-danger btn-sm';
+                botonEliminar.textContent = 'Quitar';
+
+                botonEliminar.addEventListener('click', function () {
+
+                    carrito.splice(indice, 1);
+                    actualizarCarrito();
+                });
+
+                celdaAccion.appendChild(botonEliminar);
+                fila.appendChild(celdaAccion);
+
+                // Campos que recibirá el controlador
+                const inputId = document.createElement('input');
+                inputId.type = 'hidden';
+                inputId.name = 'idProductoVendedor';
+                inputId.value = item.id;
+
+                const inputCantidad = document.createElement('input');
+                inputCantidad.type = 'hidden';
+                inputCantidad.name = 'cantidad';
+                inputCantidad.value = item.cantidad;
+
+                const inputPrecio = document.createElement('input');
+                inputPrecio.type = 'hidden';
+                inputPrecio.name = 'precioVenta';
+                inputPrecio.value = item.precio.toFixed(2);
+
+                fila.appendChild(inputId);
+                fila.appendChild(inputCantidad);
+                fila.appendChild(inputPrecio);
+
+                tablaProductos.appendChild(fila);
+            });
+        }
+
+        totalVenta.textContent = formatoMoneda.format(total);
+
+        contadorProductos.textContent =
+            carrito.length + (carrito.length === 1 ? ' producto' : ' productos');
+
+        btnRegistrarVenta.disabled = carrito.length === 0;
+    }
+
+    // Validar antes de enviar
+    formVenta.addEventListener('submit', function (event) {
+
+        if (carrito.length === 0) {
+            event.preventDefault();
+            alert('Debes agregar al menos un producto a la venta.');
+            buscarProducto.focus();
+            return;
+        }
+
+        if (!confirm('¿Deseas registrar esta venta con ' +
+            carrito.length + ' producto(s) por un total de ' +
+            totalVenta.textContent + '?')) {
+
+            event.preventDefault();
         }
     });
 
+    // Cerrar sugerencias al hacer clic fuera
     document.addEventListener('click', function (event) {
-        if (!buscarProducto.contains(event.target) &&
-            !sugerencias.contains(event.target)) {
+
+        if (!buscarProducto.contains(event.target)
+            && !sugerencias.contains(event.target)) {
+
             sugerencias.style.display = 'none';
         }
     });
